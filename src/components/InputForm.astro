@@ -345,8 +345,8 @@
   }
 
   /* ── Button Content & Loading ─────────────────────────────── */
-  .btn-content,
-  .btn-loading {
+  .btn-content:not(.hidden),
+  .btn-loading:not(.hidden) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -481,10 +481,15 @@
 
     // ── Handle generation ──
     async function handleGenerate(type: 'cv' | 'cover-letter') {
+      console.log('[InputForm] handleGenerate called for:', type);
       hideError();
 
-      if (!validateForm()) return;
+      if (!validateForm()) {
+        console.log('[InputForm] Form validation failed');
+        return;
+      }
 
+      console.log('[InputForm] Form validation passed');
       const activeBtn = type === 'cv' ? cvBtn! : clBtn!;
       const otherBtn = type === 'cv' ? clBtn! : cvBtn!;
 
@@ -493,6 +498,7 @@
       otherBtn.disabled = true;
 
       // Dispatch loading event so ResultPreview shows skeleton
+      console.log('[InputForm] Dispatching generation-start event for:', type);
       window.dispatchEvent(
         new CustomEvent('generation-start', { detail: { type } })
       );
@@ -526,6 +532,7 @@
         }
 
         // Dispatch success event
+        console.log('[InputForm] Generation successful, dispatching result-ready:', type);
         window.dispatchEvent(
           new CustomEvent('result-ready', {
             detail: {
@@ -535,6 +542,7 @@
           })
         );
       } catch (err: any) {
+        console.error('[InputForm] Generation failed:', err);
         showError(err.message || 'Something went wrong. Please try again.');
         // Dispatch error event
         window.dispatchEvent(
@@ -548,8 +556,20 @@
       }
     }
 
+    // ── Form submit handler ──
+    form.addEventListener('submit', (e) => {
+      console.log('[InputForm] Form submit prevented');
+      e.preventDefault();
+    });
+
     // ── Button click handlers ──
-    cvBtn.addEventListener('click', () => handleGenerate('cv'));
-    clBtn.addEventListener('click', () => handleGenerate('cover-letter'));
+    cvBtn.addEventListener('click', () => {
+      console.log('[InputForm] CV button clicked');
+      handleGenerate('cv');
+    });
+    clBtn.addEventListener('click', () => {
+      console.log('[InputForm] Cover Letter button clicked');
+      handleGenerate('cover-letter');
+    });
   });
 </script>

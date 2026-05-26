@@ -255,10 +255,15 @@
 
     if (!emptyState || !loadingState || !contentState || !editor) return;
 
+    console.log('[ResultPreview] Initializing component...');
+
     // ── State ──
     let results: Record<string, string> = {};
     let activeTab: string = 'cv';
     let dotsInterval: ReturnType<typeof setInterval> | null = null;
+
+    // Reset UI to empty state initially
+    showEmpty();
 
     // ── Animated loading dots ──
     function startLoadingDots() {
@@ -279,6 +284,7 @@
 
     // ── Show states ──
     function showEmpty() {
+      console.log('[ResultPreview] Switching to empty state');
       emptyState.classList.remove('hidden');
       loadingState.classList.add('hidden');
       contentState.classList.add('hidden');
@@ -286,6 +292,7 @@
     }
 
     function showLoading() {
+      console.log('[ResultPreview] Switching to loading state');
       emptyState.classList.add('hidden');
       loadingState.classList.remove('hidden');
       contentState.classList.add('hidden');
@@ -293,6 +300,7 @@
     }
 
     function showContent() {
+      console.log('[ResultPreview] Switching to content state');
       emptyState.classList.add('hidden');
       loadingState.classList.add('hidden');
       contentState.classList.remove('hidden');
@@ -325,19 +333,23 @@
     // ── Listen for events from InputForm ──
     window.addEventListener('generation-start', ((e: CustomEvent) => {
       const { type } = e.detail;
+      console.log('[ResultPreview] Received generation-start event for:', type);
       activeTab = type;
       showLoading();
     }) as EventListener);
 
     window.addEventListener('result-ready', ((e: CustomEvent) => {
       const { type, result } = e.detail;
+      console.log('[ResultPreview] Received result-ready event for:', type);
       results[type] = result;
       activeTab = type;
       setActiveTab(type);
       showContent();
     }) as EventListener);
 
-    window.addEventListener('generation-error', (() => {
+    window.addEventListener('generation-error', ((e: CustomEvent) => {
+      const { type, error } = e.detail || {};
+      console.warn('[ResultPreview] Received generation-error event:', type, error);
       // If we have previous results, show them; otherwise show empty
       if (Object.keys(results).length > 0) {
         showContent();
