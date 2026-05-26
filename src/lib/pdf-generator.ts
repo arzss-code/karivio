@@ -16,11 +16,15 @@ interface PDFData {
 
 async function loadPdfMake() {
   // @ts-ignore - pdfmake doesn't ship proper ESM types
-  const pdfMake = await import('pdfmake/build/pdfmake');
+  const pdfMakeModule = await import('pdfmake/build/pdfmake');
   // @ts-ignore
-  const pdfFonts = await import('pdfmake/build/vfs_fonts');
-  pdfMake.default.vfs = pdfFonts.default.pdfMake.vfs;
-  return pdfMake.default;
+  const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
+
+  const pdfMake = pdfMakeModule.default || pdfMakeModule;
+  const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  return pdfMake;
 }
 
 function parseContentToLines(content: string): string[] {

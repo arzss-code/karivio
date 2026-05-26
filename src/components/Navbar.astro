@@ -143,12 +143,19 @@
 </style>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+  function initNavbar() {
     const navbar = document.getElementById('main-navbar');
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
 
     if (!navbar || !btn || !menu) return;
+
+    if (navbar.dataset.initialized === 'true') {
+      console.log('[Navbar] Already initialized, skipping');
+      return;
+    }
+    navbar.dataset.initialized = 'true';
+    console.log('[Navbar] Initializing navbar handlers...');
 
     // ── Mobile toggle ──
     btn.addEventListener('click', () => {
@@ -167,5 +174,11 @@
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll(); // initial check
-  });
+  }
+
+  // Initialize immediately
+  initNavbar();
+
+  // Re-run on client transitions
+  document.addEventListener('astro:page-load', initNavbar);
 </script>

@@ -361,7 +361,7 @@
 </style>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+  function initForm() {
     // ── DOM refs ──
     const form = document.getElementById('career-form') as HTMLFormElement | null;
     const cvBtn = document.getElementById('generate-cv-btn') as HTMLButtonElement | null;
@@ -381,6 +381,13 @@
     const jobCounter = document.getElementById('jobdesc-counter');
 
     if (!form || !cvBtn || !clBtn) return;
+
+    if (form.dataset.initialized === 'true') {
+      console.log('[InputForm] Already initialized, skipping');
+      return;
+    }
+    form.dataset.initialized = 'true';
+    console.log('[InputForm] Initializing form handlers...');
 
     // ── Character counters ──
     function updateCounter(textarea: HTMLTextAreaElement | null, counter: HTMLElement | null) {
@@ -571,5 +578,11 @@
       console.log('[InputForm] Cover Letter button clicked');
       handleGenerate('cover-letter');
     });
-  });
+  }
+
+  // Initialize immediately
+  initForm();
+
+  // Re-run on client-side router navigation
+  document.addEventListener('astro:page-load', initForm);
 </script>

@@ -54,11 +54,21 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (error: any) {
     console.error('CV generation error:', error);
 
-    const status = error?.status || error?.httpStatusCode;
-    if (status === 429) {
+    const errorMessage = error?.message || '';
+    if (errorMessage.includes('API key') || errorMessage.includes('GEMINI_API_KEY')) {
       return new Response(
         JSON.stringify({
-          error: 'AI service is currently busy. Please try again in a moment.',
+          error: 'API key is invalid or missing. Please set a valid GEMINI_API_KEY in your .env file.',
+        }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const status = error?.status || error?.httpStatusCode;
+    if (status === 429 || status === 503) {
+      return new Response(
+        JSON.stringify({
+          error: 'AI service is currently busy or experiencing high demand. Please try again in a few seconds.',
         }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
       );

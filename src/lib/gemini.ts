@@ -15,23 +15,53 @@ function getClient(): GoogleGenAI {
 
 export async function generateContent(
   prompt: string,
-  systemInstruction: string
+  systemInstruction: string,
+  retries = 3
 ): Promise<string> {
   const client = getClient();
+  let lastError;
 
-  const response = await client.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: prompt,
-    config: {
-      systemInstruction,
-      temperature: 0.7,
-      maxOutputTokens: 4096,
-    },
-  });
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await client.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+          maxOutputTokens: 4096,
+        },
+      });
 
-  const text = response.text;
-  if (!text) {
-    throw new Error('Empty response from Gemini API');
+      const text = response.text;
+      if (!text) {
+        throw new Error('Empty response from Gemini API');
+      }
+      return text;
+    } catch (error: any) {
+      lastError = error;
+      const status = error?.status;
+      const message = error?.message || String(error);
+      
+      const isRetryable = 
+        status === 429 || 
+        status === 503 || 
+        message.includes('429') || 
+        message.includes('503') ||
+        message.includes('busy') ||
+        message.includes('high demand') ||
+        message.includes('quota');
+
+      if (isRetryable && attempt < retries) {
+        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+        console.warn(`[Gemini API] Request failed (attempt ${attempt}/${retries}). Retrying in ${delay}ms...`, message);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      
+      throw error;
+    }
   }
-  return text;
+
+  throw lastError;
 }

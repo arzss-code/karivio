@@ -237,7 +237,7 @@
 </style>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+  function initResultPreview() {
     // ── DOM refs ──
     const emptyState = document.getElementById('result-empty');
     const loadingState = document.getElementById('result-loading');
@@ -255,6 +255,11 @@
 
     if (!emptyState || !loadingState || !contentState || !editor) return;
 
+    if (emptyState.dataset.initialized === 'true') {
+      console.log('[ResultPreview] Already initialized, skipping');
+      return;
+    }
+    emptyState.dataset.initialized = 'true';
     console.log('[ResultPreview] Initializing component...');
 
     // ── State ──
@@ -438,5 +443,11 @@
         (downloadBtn as HTMLButtonElement).disabled = false;
       }
     });
-  });
+  }
+
+  // Initialize immediately
+  initResultPreview();
+
+  // Re-run on client transitions
+  document.addEventListener('astro:page-load', initResultPreview);
 </script>
