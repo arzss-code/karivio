@@ -23,7 +23,23 @@ async function loadPdfMake() {
   const pdfMake = pdfMakeModule.default || pdfMakeModule;
   const pdfFonts = pdfFontsModule.default || pdfFontsModule;
 
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  let vfs = null;
+  if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
+    vfs = pdfFonts.pdfMake.vfs;
+  } else if (pdfFonts && pdfFonts.vfs) {
+    vfs = pdfFonts.vfs;
+  } else if (pdfFonts && Object.keys(pdfFonts).some(k => k.includes('.ttf'))) {
+    vfs = pdfFonts;
+  } else if (typeof window !== 'undefined' && (window as any).pdfMake && (window as any).pdfMake.vfs) {
+    vfs = (window as any).pdfMake.vfs;
+  }
+
+  if (vfs) {
+    pdfMake.vfs = vfs;
+  } else {
+    console.error("Could not find pdfMake vfs object", { pdfFonts });
+  }
+
   return pdfMake;
 }
 
