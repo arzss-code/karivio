@@ -1,0 +1,555 @@
+---
+// InputForm – comprehensive input form for resume/cover letter generation
+---
+
+<section id="input-form-section" class="animate-slide-up">
+  <form id="career-form" novalidate>
+    <!-- Error Alert -->
+    <div
+      id="form-error-alert"
+      class="mb-6 hidden rounded-xl border border-error/30 bg-error/5 px-5 py-4 text-sm text-error"
+      role="alert"
+    >
+      <div class="flex items-start gap-3">
+        <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <span id="form-error-text">Something went wrong.</span>
+      </div>
+    </div>
+
+    <!-- Card Container -->
+    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- Section 1: Personal Information                        -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="border-b border-border p-6 sm:p-8">
+        <div class="mb-6 flex items-center gap-3">
+          <div class="h-5 w-1 rounded-full bg-neutral-900"></div>
+          <h2 class="text-base font-semibold text-neutral-900">Personal Information</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <!-- Full Name -->
+          <div class="group">
+            <label for="input-fullname" class="mb-1.5 block text-sm font-medium text-text-muted">
+              Full Name <span class="text-error">*</span>
+            </label>
+            <input
+              type="text"
+              id="input-fullname"
+              name="fullname"
+              required
+              autocomplete="name"
+              placeholder="e.g. Jane Smith"
+              class="form-input"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="group">
+            <label for="input-email" class="mb-1.5 block text-sm font-medium text-text-muted">
+              Email <span class="text-error">*</span>
+            </label>
+            <input
+              type="email"
+              id="input-email"
+              name="email"
+              required
+              autocomplete="email"
+              placeholder="jane@example.com"
+              class="form-input"
+            />
+          </div>
+
+          <!-- Phone -->
+          <div class="group">
+            <label for="input-phone" class="mb-1.5 block text-sm font-medium text-text-muted">
+              Phone <span class="text-text-faint text-xs">(optional)</span>
+            </label>
+            <input
+              type="tel"
+              id="input-phone"
+              name="phone"
+              autocomplete="tel"
+              placeholder="+62 812 3456 7890"
+              class="form-input"
+            />
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="group">
+            <label for="input-linkedin" class="mb-1.5 block text-sm font-medium text-text-muted">
+              LinkedIn <span class="text-text-faint text-xs">(optional)</span>
+            </label>
+            <input
+              type="url"
+              id="input-linkedin"
+              name="linkedin"
+              autocomplete="url"
+              placeholder="https://linkedin.com/in/janesmith"
+              class="form-input"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- Section 2: Experience & Skills                          -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="border-b border-border p-6 sm:p-8">
+        <div class="mb-6 flex items-center gap-3">
+          <div class="h-5 w-1 rounded-full bg-neutral-900"></div>
+          <h2 class="text-base font-semibold text-neutral-900">Experience & Skills</h2>
+        </div>
+
+        <div class="group">
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="input-experience" class="text-sm font-medium text-text-muted">
+              Your Experience <span class="text-error">*</span>
+            </label>
+            <span
+              id="experience-counter"
+              class="text-xs text-text-faint transition-colors"
+            >
+              0 / 5,000
+            </span>
+          </div>
+          <textarea
+            id="input-experience"
+            name="experience"
+            required
+            rows="8"
+            maxlength="5000"
+            placeholder="Paste your work experience, skills, achievements here...&#10;&#10;Example:&#10;- Managed a team of 5 developers&#10;- Built a React web app that increased sales by 30%&#10;- Led migration from legacy PHP to Node.js&#10;- 3 years experience with Python, AWS, Docker"
+            class="form-input min-h-[180px] resize-y"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- Section 3: Target Job Description                       -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="border-b border-border p-6 sm:p-8">
+        <div class="mb-6 flex items-center gap-3">
+          <div class="h-5 w-1 rounded-full bg-neutral-900"></div>
+          <h2 class="text-base font-semibold text-neutral-900">Target Job Description</h2>
+        </div>
+
+        <div class="group">
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="input-jobdesc" class="text-sm font-medium text-text-muted">
+              Job Description <span class="text-error">*</span>
+            </label>
+            <span
+              id="jobdesc-counter"
+              class="text-xs text-text-faint transition-colors"
+            >
+              0 / 5,000
+            </span>
+          </div>
+          <textarea
+            id="input-jobdesc"
+            name="jobDescription"
+            required
+            rows="8"
+            maxlength="5000"
+            placeholder="Paste the job description you're applying for...&#10;&#10;Include the role title, responsibilities, requirements, and any specific skills mentioned."
+            class="form-input min-h-[180px] resize-y"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- Section 4: Options & Actions                            -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="p-6 sm:p-8">
+        <!-- Options Row -->
+        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div class="group w-full sm:w-auto">
+            <label for="input-language" class="mb-1.5 block text-sm font-medium text-text-muted">
+              Output Language
+            </label>
+            <div class="relative">
+              <select
+                id="input-language"
+                name="language"
+                class="form-input appearance-none pr-10 sm:w-56 cursor-pointer"
+              >
+                <option value="auto">Auto-detect language</option>
+                <option value="en">English (EN)</option>
+                <option value="id">Bahasa Indonesia (ID)</option>
+              </select>
+              <svg
+                class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            id="generate-cv-btn"
+            class="btn-primary group flex-1"
+          >
+            <span class="btn-content">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.096-.813L9 9l.813 5.187L15 15l-5.187.813zM19.071 4.929l-.707 2.122-2.122.707 2.122.707.707 2.122.707-2.122 2.122-.707-2.122-.707-.707-2.122z" />
+              </svg>
+              <span>Generate CV Bullet Points</span>
+            </span>
+            <span class="btn-loading hidden">
+              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              <span>Generating...</span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            id="generate-cl-btn"
+            class="btn-secondary group flex-1"
+          >
+            <span class="btn-content">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span>Generate Cover Letter</span>
+            </span>
+            <span class="btn-loading hidden">
+              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              <span>Generating...</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+
+<style>
+  /* ── Form Input Base ──────────────────────────────────────── */
+  .form-input {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-text);
+    transition: all 0.15s ease-in-out;
+    outline: none;
+  }
+
+  .form-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+  }
+
+  .form-input:hover {
+    border-color: var(--color-primary-300);
+  }
+
+  .form-input:focus {
+    border-color: var(--color-primary-600);
+    box-shadow: 0 0 0 2px oklch(0.12 0.01 240 / 0.06);
+  }
+
+  .form-input.input-error {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 2px oklch(0.52 0.16 25 / 0.06);
+  }
+
+  textarea.form-input {
+    font-family: inherit;
+  }
+
+  /* ── Primary Button ───────────────────────────────────────── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background: var(--color-primary-900);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    border: 1px solid var(--color-primary-950);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-800);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background: var(--color-primary-950);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ── Secondary Button ─────────────────────────────────────── */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-300);
+  }
+
+  .btn-secondary:active:not(:disabled) {
+    background: var(--color-primary-100);
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ── Button Content & Loading ─────────────────────────────── */
+  .btn-content,
+  .btn-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    // ── DOM refs ──
+    const form = document.getElementById('career-form') as HTMLFormElement | null;
+    const cvBtn = document.getElementById('generate-cv-btn') as HTMLButtonElement | null;
+    const clBtn = document.getElementById('generate-cl-btn') as HTMLButtonElement | null;
+    const errorAlert = document.getElementById('form-error-alert') as HTMLElement | null;
+    const errorText = document.getElementById('form-error-text') as HTMLElement | null;
+
+    // Inputs
+    const nameInput = document.getElementById('input-fullname') as HTMLInputElement | null;
+    const emailInput = document.getElementById('input-email') as HTMLInputElement | null;
+    const experienceInput = document.getElementById('input-experience') as HTMLTextAreaElement | null;
+    const jobDescInput = document.getElementById('input-jobdesc') as HTMLTextAreaElement | null;
+    const languageSelect = document.getElementById('input-language') as HTMLSelectElement | null;
+
+    // Counters
+    const expCounter = document.getElementById('experience-counter');
+    const jobCounter = document.getElementById('jobdesc-counter');
+
+    if (!form || !cvBtn || !clBtn) return;
+
+    // ── Character counters ──
+    function updateCounter(textarea: HTMLTextAreaElement | null, counter: HTMLElement | null) {
+      if (!textarea || !counter) return;
+      const len = textarea.value.length;
+      const max = 5000;
+      counter.textContent = `${len.toLocaleString()} / ${max.toLocaleString()}`;
+      if (len > max * 0.9) {
+        counter.classList.add('text-warning');
+        counter.classList.remove('text-text-faint', 'text-error');
+      } else if (len >= max) {
+        counter.classList.add('text-error');
+        counter.classList.remove('text-text-faint', 'text-warning');
+      } else {
+        counter.classList.add('text-text-faint');
+        counter.classList.remove('text-warning', 'text-error');
+      }
+    }
+
+    experienceInput?.addEventListener('input', () => updateCounter(experienceInput, expCounter));
+    jobDescInput?.addEventListener('input', () => updateCounter(jobDescInput, jobCounter));
+
+    // ── Show/hide error ──
+    function showError(message: string) {
+      if (!errorAlert || !errorText) return;
+      errorText.textContent = message;
+      errorAlert.classList.remove('hidden');
+      errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Auto-dismiss after 8s
+      setTimeout(() => hideError(), 8000);
+    }
+
+    function hideError() {
+      errorAlert?.classList.add('hidden');
+    }
+
+    // ── Clear error styling on input ──
+    [nameInput, emailInput, experienceInput, jobDescInput].forEach((el) => {
+      el?.addEventListener('input', () => {
+        el.classList.remove('input-error');
+        hideError();
+      });
+    });
+
+    // ── Validate form ──
+    function validateForm(): boolean {
+      let isValid = true;
+      const fields: { el: HTMLInputElement | HTMLTextAreaElement | null; name: string }[] = [
+        { el: nameInput, name: 'Full Name' },
+        { el: emailInput, name: 'Email' },
+        { el: experienceInput, name: 'Experience' },
+        { el: jobDescInput, name: 'Job Description' },
+      ];
+
+      // Clear previous errors
+      fields.forEach(({ el }) => el?.classList.remove('input-error'));
+
+      for (const { el, name } of fields) {
+        if (!el || !el.value.trim()) {
+          el?.classList.add('input-error');
+          el?.focus();
+          showError(`${name} is required.`);
+          isValid = false;
+          break;
+        }
+      }
+
+      // Validate email format
+      if (isValid && emailInput) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput.value.trim())) {
+          emailInput.classList.add('input-error');
+          emailInput.focus();
+          showError('Please enter a valid email address.');
+          isValid = false;
+        }
+      }
+
+      return isValid;
+    }
+
+    // ── Set button loading state ──
+    function setButtonLoading(button: HTMLButtonElement, loading: boolean) {
+      const content = button.querySelector('.btn-content') as HTMLElement;
+      const loadingEl = button.querySelector('.btn-loading') as HTMLElement;
+      if (!content || !loadingEl) return;
+
+      if (loading) {
+        content.classList.add('hidden');
+        loadingEl.classList.remove('hidden');
+        button.disabled = true;
+      } else {
+        content.classList.remove('hidden');
+        loadingEl.classList.add('hidden');
+        button.disabled = false;
+      }
+    }
+
+    // ── Handle generation ──
+    async function handleGenerate(type: 'cv' | 'cover-letter') {
+      hideError();
+
+      if (!validateForm()) return;
+
+      const activeBtn = type === 'cv' ? cvBtn! : clBtn!;
+      const otherBtn = type === 'cv' ? clBtn! : cvBtn!;
+
+      // Set loading states
+      setButtonLoading(activeBtn, true);
+      otherBtn.disabled = true;
+
+      // Dispatch loading event so ResultPreview shows skeleton
+      window.dispatchEvent(
+        new CustomEvent('generation-start', { detail: { type } })
+      );
+
+      try {
+        const endpoint =
+          type === 'cv' ? '/api/generate-cv' : '/api/generate-cover-letter';
+
+        const body: Record<string, string> = {
+          experience: experienceInput!.value.trim(),
+          jobDescription: jobDescInput!.value.trim(),
+          language: languageSelect?.value || 'auto',
+        };
+
+        // Cover letter also sends name/email
+        if (type === 'cover-letter') {
+          body.name = nameInput!.value.trim();
+          body.email = emailInput!.value.trim();
+        }
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || `Server error (${response.status})`);
+        }
+
+        // Dispatch success event
+        window.dispatchEvent(
+          new CustomEvent('result-ready', {
+            detail: {
+              type,
+              result: data.result,
+            },
+          })
+        );
+      } catch (err: any) {
+        showError(err.message || 'Something went wrong. Please try again.');
+        // Dispatch error event
+        window.dispatchEvent(
+          new CustomEvent('generation-error', {
+            detail: { type, error: err.message },
+          })
+        );
+      } finally {
+        setButtonLoading(activeBtn, false);
+        otherBtn.disabled = false;
+      }
+    }
+
+    // ── Button click handlers ──
+    cvBtn.addEventListener('click', () => handleGenerate('cv'));
+    clBtn.addEventListener('click', () => handleGenerate('cover-letter'));
+  });
+</script>

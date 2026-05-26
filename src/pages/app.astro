@@ -1,0 +1,38 @@
+---
+export const prerender = false;
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import InputForm from '../components/InputForm.astro';
+import ResultPreview from '../components/ResultPreview.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Create Resume - CareerGen" description="Generate professional, ATS-friendly resumes and cover letters with AI. Free, private, and powerful.">
+  <Navbar />
+  <main class="min-h-screen bg-neutral-50/50 pt-24 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Page Header -->
+      <header class="text-center mb-10 animate-fade-in">
+        <div class="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 border border-neutral-200 px-3.5 py-1 text-xs font-medium text-neutral-600 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          AI-Powered Assistant
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900">
+          Create Your Perfect Resume
+        </h1>
+        <p class="mt-3 text-sm text-text-muted max-w-2xl mx-auto">
+          Fill in your details below and let AI craft professional, ATS-optimized content for you
+        </p>
+      </header>
+
+      <!-- Two Column Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <InputForm />
+        <ResultPreview />
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
