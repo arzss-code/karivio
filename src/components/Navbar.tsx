@@ -92,16 +92,14 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-white/80 backdrop-blur-md border-b border-neutral-200/60 shadow-[0_4px_30px_rgba(0,0,0,0.03)]'
-        : 'bg-transparent'
+      className={`fixed top-0 inset-x-0 z-50 border-b transition-all duration-300 ${isScrolled
+        ? 'bg-white/80 backdrop-blur-md border-neutral-200 shadow-[0_4px_30px_rgba(0,0,0,0.03)]'
+        : 'bg-transparent border-transparent'
         }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="group flex items-center gap-2.5 transition-transform duration-300 hover:opacity-80">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-neutral-900 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
+          <img src="/icon.svg" alt="CareerGen Logo" className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" />
           <span className="text-[1.05rem] font-bold tracking-tight text-neutral-900">CareerGen</span>
         </Link>
 
