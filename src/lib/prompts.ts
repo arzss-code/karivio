@@ -21,13 +21,13 @@ export function getCVPrompt(
 Personal Info / Header:
 ${personalInfo}
 
-Raw Experience/Skills:
+Experience Details:
 ${experience}
 
-Raw Education:
+Education Details:
 ${education}
 
-Raw Projects:
+Project Details:
 ${projects}
 
 Target Job Description:
@@ -36,6 +36,12 @@ ${jobDescription}
 Guidelines for the JSON output:
 1. The output MUST be a valid JSON object with the following structure:
 {
+  "header": {
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number (if any)",
+    "linkedin": "LinkedIn URL (if any)"
+  },
   "summary": "A strong, 3-4 sentence professional summary tailored to the target job description.",
   "experience": [
     {
