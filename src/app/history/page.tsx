@@ -144,7 +144,7 @@ export default function HistoryPage() {
             </p>
             <button
               onClick={handleSignIn}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-95 shadow-sm"
+              className="w-full flex items-center cursor-pointer justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-95 shadow-sm"
             >
               Sign In with Google
             </button>
@@ -225,11 +225,10 @@ export default function HistoryPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h3 className="text-sm font-bold text-neutral-900 truncate max-w-[160px] sm:max-w-none">{getDocTitle(doc)}</h3>
-                          <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                            doc.document_type === 'resume'
-                              ? 'bg-neutral-900 text-white'
-                              : 'bg-neutral-100 text-neutral-600 border border-neutral-200'
-                          }`}>
+                          <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${doc.document_type === 'resume'
+                            ? 'bg-neutral-900 text-white'
+                            : 'bg-neutral-100 text-neutral-600 border border-neutral-200'
+                            }`}>
                             {doc.document_type === 'resume' ? 'CV' : 'Cover Letter'}
                           </span>
                         </div>
@@ -247,7 +246,7 @@ export default function HistoryPage() {
                     <div className="flex items-center gap-2 mt-4 pt-3 border-t border-neutral-100">
                       <button
                         onClick={() => handleLoad(doc)}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 active:scale-95 transition-all shadow-sm"
+                        className="flex-1 inline-flex items-center cursor-pointer justify-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 active:scale-95 transition-all shadow-sm"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         View
@@ -255,7 +254,7 @@ export default function HistoryPage() {
                       <button
                         onClick={() => handleDelete(doc.id)}
                         disabled={deletingId === doc.id}
-                        className="inline-flex items-center justify-center rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-100 active:scale-95 transition-all disabled:opacity-60 disabled:active:scale-100"
+                        className="inline-flex items-center cursor-pointer justify-center rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-100 active:scale-95 transition-all disabled:opacity-60 disabled:active:scale-100"
                       >
                         {deletingId === doc.id
                           ? <Loader2 className="h-3.5 w-3.5 animate-spin" />

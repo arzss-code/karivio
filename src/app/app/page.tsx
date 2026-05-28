@@ -64,13 +64,13 @@ export default function AppPage() {
             </p>
             <button
               onClick={handleSignIn}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-95 shadow-sm"
+              className="w-full flex items-center cursor-pointer justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-neutral-800 active:scale-95 shadow-sm"
             >
               Sign In with Google
             </button>
             <button
               onClick={() => router.push('/')}
-              className="mt-4 w-full text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
+              className="mt-4 w-full cursor-pointer text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
             >
               Back to Home
             </button>

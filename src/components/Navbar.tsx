@@ -29,7 +29,7 @@ export default function Navbar() {
           .select('credits_balance, full_name, email')
           .eq('id', session.user.id)
           .single();
-        
+
         if (profile) {
           setUserProfile({ id: session.user.id, ...profile });
 
@@ -62,13 +62,13 @@ export default function Navbar() {
         }
       }
     };
-    
+
     checkSession();
 
     const onScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-    
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       if (realtimeChannel) {
@@ -92,16 +92,15 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/80 backdrop-blur-md border-b border-neutral-200/60 shadow-[0_4px_30px_rgba(0,0,0,0.03)]' 
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white/80 backdrop-blur-md border-b border-neutral-200/60 shadow-[0_4px_30px_rgba(0,0,0,0.03)]'
+        : 'bg-transparent'
+        }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="group flex items-center gap-2.5 transition-transform duration-300 hover:opacity-80">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-neutral-900 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <span className="text-[1.05rem] font-bold tracking-tight text-neutral-900">CareerGen</span>
         </Link>
@@ -121,20 +120,20 @@ export default function Navbar() {
               </Link>
             )}
           </div>
-          
+
           <div className="h-4 w-px bg-neutral-200"></div>
 
           {userProfile ? (
             <div className="flex items-center gap-5">
-              <button 
-                type="button" 
-                onClick={() => window.dispatchEvent(new Event('open-topup'))} 
-                className="group flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:shadow"
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event('open-topup'))}
+                className="group flex items-center cursor-pointer gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:shadow"
               >
                 <Gem className="h-3.5 w-3.5 text-blue-500" />
                 <span>{userProfile.credits_balance} Credits</span>
               </button>
-              
+
               <div className="relative group">
                 <div className="flex items-center gap-2 cursor-pointer rounded-full border border-neutral-200 bg-white p-1 pr-3 hover:bg-neutral-50 transition-colors">
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700">
@@ -148,9 +147,9 @@ export default function Navbar() {
                     <p className="text-sm font-medium text-neutral-900 truncate">{userProfile.full_name}</p>
                     <p className="text-xs text-neutral-500 truncate mt-0.5">{userProfile.email}</p>
                   </div>
-                  <button 
-                    onClick={handleSignOut} 
-                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  <button
+                    onClick={handleSignOut}
+                    className="flex w-full items-center cursor-pointer gap-2 rounded-xl px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
                     Sign Out
@@ -159,9 +158,9 @@ export default function Navbar() {
               </div>
             </div>
           ) : (
-            <button 
-              onClick={handleSignIn} 
-              className="inline-flex items-center justify-center rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+            <button
+              onClick={handleSignIn}
+              className="inline-flex items-center cursor-pointer justify-center rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             >
               Sign In
             </button>
@@ -169,8 +168,8 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)} 
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-white border border-neutral-200 text-neutral-600 transition-colors hover:bg-neutral-50"
         >
           {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -185,9 +184,9 @@ export default function Navbar() {
           {userProfile && (
             <Link href="/history" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">History</Link>
           )}
-          
+
           <hr className="border-neutral-100" />
-          
+
           {userProfile ? (
             <>
               <div className="flex flex-col space-y-1">
@@ -195,13 +194,13 @@ export default function Navbar() {
                 <span className="text-xs text-neutral-500">{userProfile.email}</span>
                 <span className="text-xs font-semibold text-blue-600 mt-1">{userProfile.credits_balance} Credits Available</span>
               </div>
-              <button 
+              <button
                 onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new Event('open-topup')); }}
                 className="w-full rounded-xl bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-100 transition-colors text-left"
               >
                 Top Up Credits
               </button>
-              <button 
+              <button
                 onClick={handleSignOut}
                 className="w-full flex items-center gap-2 rounded-xl border border-red-100 bg-red-50/50 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
               >
@@ -210,7 +209,7 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <button 
+            <button
               onClick={handleSignIn}
               className="w-full rounded-xl bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 text-center"
             >

@@ -24,9 +24,9 @@ export default function TopUpModal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ packageId: 'starter' })
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           alert('Please login first to top up credits.');
@@ -37,22 +37,22 @@ export default function TopUpModal() {
       }
 
       const token = data.token;
-      
+
       // @ts-ignore
       window.snap.pay(token, {
-        onSuccess: function(result: any) {
+        onSuccess: function (result: any) {
           alert("Payment success! Your credits will be updated automatically.");
           closeModal();
         },
-        onPending: function(result: any) {
+        onPending: function (result: any) {
           alert("Waiting for your payment!");
           closeModal();
         },
-        onError: function(result: any) {
+        onError: function (result: any) {
           alert("Payment failed!");
           closeModal();
         },
-        onClose: function() {
+        onClose: function () {
           // customer closed the popup
         }
       });
@@ -69,10 +69,10 @@ export default function TopUpModal() {
   return (
     <>
       <Script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY} strategy="lazyOnload" />
-      
+
       <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-4">
         <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm transition-opacity" onClick={closeModal}></div>
-        
+
         <div className="relative w-full max-w-md transform rounded-3xl bg-white p-7 shadow-2xl transition-all animate-scale-in border border-neutral-100">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-neutral-900 flex items-center gap-2.5">
@@ -81,7 +81,7 @@ export default function TopUpModal() {
               </div>
               Top Up Credits
             </h3>
-            <button onClick={closeModal} className="rounded-full p-2 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 transition-colors">
+            <button onClick={closeModal} className="cursor-pointer rounded-full p-2 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -108,11 +108,11 @@ export default function TopUpModal() {
                     Unlock ATS Templates
                   </li>
                 </ul>
-                
-                <button 
-                  onClick={handleBuy} 
+
+                <button
+                  onClick={handleBuy}
                   disabled={isLoading}
-                  className="w-full rounded-xl bg-neutral-900 py-3 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:active:scale-100"
+                  className="w-full rounded-xl bg-neutral-900 cursor-pointer py-3 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:active:scale-100"
                 >
                   {!isLoading ? (
                     <span>Buy with QRIS / GoPay</span>
@@ -126,7 +126,7 @@ export default function TopUpModal() {
               </div>
             </div>
           </div>
-          
+
           <p className="mt-5 text-center text-xs font-medium text-neutral-400">
             Secure payment processed by Midtrans
           </p>

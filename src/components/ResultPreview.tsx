@@ -73,12 +73,13 @@ export default function ResultPreview() {
     if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
     // Check for pdfmake leak (objects with _inlines keys)
     if ('_inlines' in data || 'content' in data) return null;
-    
+
     const { header, summary, experience, education, projects, skills, achievements, certifications } = data;
 
     return (
       <div className="cv-document">
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           .cv-document {
             font-family: 'Times New Roman', Times, serif;
             color: #000;
@@ -300,7 +301,8 @@ export default function ResultPreview() {
   const renderCoverLetter = (text: string) => {
     return (
       <div className="cl-content whitespace-pre-wrap leading-relaxed text-neutral-900" style={{ fontFamily: "'Times New Roman', Times, serif", fontSize: '11pt' }}>
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           @media print {
             body * {
               visibility: hidden;
@@ -335,11 +337,11 @@ export default function ResultPreview() {
 
     return (
       <div className="animate-scale-in flex flex-col h-full lg:max-h-[calc(100vh-8rem)] rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
-        
+
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-6 py-4 bg-neutral-50 shrink-0">
           <div className="relative hidden sm:block">
-            <select 
+            <select
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
               className="rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
@@ -350,17 +352,17 @@ export default function ResultPreview() {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button 
+            <button
               onClick={handlePrint}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-white border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 transition-colors"
             >
               <Printer className="h-4 w-4" />
               Print
             </button>
-            <button 
+            <button
               onClick={handleDirectDownload}
               disabled={isDownloading}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-colors active:scale-95 disabled:opacity-70"
+              className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-colors active:scale-95 disabled:opacity-70"
             >
               {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Download PDF
@@ -370,12 +372,12 @@ export default function ResultPreview() {
 
         {/* Document Preview Area */}
         <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-neutral-100/50 flex justify-center">
-          <div 
-            className="print-container bg-white shadow-md border border-neutral-200 w-full" 
-            style={{ 
-              maxWidth: '210mm', 
-              minHeight: '297mm', 
-              padding: '40px 50px' 
+          <div
+            className="print-container bg-white shadow-md border border-neutral-200 w-full"
+            style={{
+              maxWidth: '210mm',
+              minHeight: '297mm',
+              padding: '40px 50px'
             }}
           >
             {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
