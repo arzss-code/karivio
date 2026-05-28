@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+@theme {
+  /* Neutral Slate color palette for a clean, minimalist, and modern look */
+  --color-primary-50: oklch(0.98 0.005 240);
+  --color-primary-100: oklch(0.96 0.008 240);
+  --color-primary-200: oklch(0.90 0.01 240);
+  --color-primary-300: oklch(0.82 0.015 240);
+  --color-primary-400: oklch(0.68 0.02 240);
+  --color-primary-500: oklch(0.45 0.02 240);
+  --color-primary-600: oklch(0.32 0.02 240);
+  --color-primary-700: oklch(0.24 0.015 240);
+  --color-primary-800: oklch(0.18 0.01 240);
+  --color-primary-900: oklch(0.12 0.01 240);
+  --color-primary-950: oklch(0.08 0.005 240);
+
+  --color-surface: oklch(1 0 0);
+  --color-surface-alt: oklch(0.98 0.005 240);
+  --color-surface-dark: oklch(0.12 0.01 240);
+  --color-border: oklch(0.92 0.008 240);
+  --color-text: oklch(0.16 0.01 240);
+  --color-text-muted: oklch(0.48 0.015 240);
+
+  --color-success: oklch(0.62 0.16 145);
+  --color-warning: oklch(0.72 0.12 80);
+  --color-error: oklch(0.52 0.16 25);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-slide-up: slide-up 0.4s ease-out both;
+  --animate-slide-down: slide-down 0.3s ease-out both;
+  --animate-scale-in: scale-in 0.25s ease-out both;
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+/* ── Keyframes ───────────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ── Global Base Styles ──────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-200);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-400);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-200) transparent;
+}
+
+/* ── Selection ───────────────────────────────────────────── */
+
+::selection {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-950);
+}
+
+/* ── Utility: Clean Minimalist Card ───────────────────────── */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 24px -1px oklch(0 0 0 / 0.04), 0 1px 2px oklch(0 0 0 / 0.02);
+}
+
+/* ── Utility: Premium Monochrome Gradient Text ─────── */
+
+.gradient-text {
+  background: linear-gradient(to right, var(--color-primary-950), var(--color-primary-600));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+/* ── Utility: Stagger Animation Delays ───────────────────── */
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* ── CV Template Print & Display Styles ──────────────────── */
+
+/* CV Template Base Styles */
+.print-area {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #111;
+  line-height: 1.5;
+}
+
+/* Classic Template (ATS Optimized / Harvard Style) */
+.template-classic {
+  font-family: 'Times New Roman', Times, serif;
+  color: #000;
+}
+.template-classic h1 { font-size: 24pt; font-weight: bold; text-align: center; margin-bottom: 0.1rem; }
+.template-classic .contact-info { text-align: center; font-size: 11pt; color: #000; margin-bottom: 1.25rem; }
+.template-classic .section-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin-top: 1rem; margin-bottom: 0.5rem; padding-bottom: 0.1rem; }
+
+.template-classic .cv-item-title { font-weight: bold; font-size: 11pt; color: #000; }
+.template-classic .cv-item-subtitle { font-weight: normal; font-style: italic; font-size: 11pt; color: #000; margin-left: 0.25rem; }
+.template-classic .cv-item-date { font-size: 11pt; font-weight: bold; color: #000; }
+
+.template-classic .cv-skills { display: block; line-height: 1.6; }
+.template-classic .cv-skill-pill { background: transparent; padding: 0; color: #000; font-size: 11pt; display: inline; border-radius: 0; }
+.template-classic .cv-skill-pill::after { content: ", "; }
+.template-classic .cv-skill-pill:last-child::after { content: ""; }
+
+.template-classic .cv-bullets li { font-size: 11pt; color: #000; margin-bottom: 0.2rem; }
+.template-classic .cv-summary { font-size: 11pt; color: #000; }
+
+/* Modern Template */
+.template-modern {
+  font-family: 'Inter', sans-serif;
+}
+.template-modern h1 { font-size: 26pt; font-weight: 800; color: #0f172a; margin-bottom: 0.2rem; letter-spacing: -0.02em; }
+.template-modern .contact-info { font-size: 9.5pt; color: #64748b; margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.template-modern .section-title { font-size: 12pt; font-weight: 700; color: #2563eb; margin-top: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.template-modern .section-title::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+/* Minimal Template */
+.template-minimal {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.template-minimal h1 { font-size: 20pt; font-weight: 300; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem; }
+.template-minimal .contact-info { font-size: 9.5pt; color: #737373; margin-bottom: 2rem; }
+.template-minimal .section-title { font-size: 10pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2rem; margin-bottom: 1rem; color: #404040; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.25rem; }
+
+/* Shared Typography */
+.cv-summary { font-size: 10pt; line-height: 1.6; margin-bottom: 1rem; }
+.cv-item { margin-bottom: 1rem; }
+.cv-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem; }
+.cv-item-title { font-weight: 600; font-size: 10.5pt; }
+.cv-item-subtitle { font-weight: 500; font-size: 10pt; color: #444; }
+.cv-item-date { font-size: 9pt; color: #666; white-space: nowrap; }
+
+.cv-bullets { list-style-type: disc; padding-left: 1.25rem; margin-top: 0.25rem; }
+.cv-bullets li { font-size: 10pt; line-height: 1.5; margin-bottom: 0.25rem; color: #333; }
+
+.cv-skills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.cv-skill-pill { background: #f1f5f9; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-size: 9pt; color: #334155; font-weight: 500; }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  @page {
+    margin: 0.5cm;
+  }
+}
+
