@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
+import { Sparkles, Menu, X, LogOut, ChevronDown, User, Gem } from 'lucide-react';
 
-// Initialize Supabase client for browser
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createBrowserClient(supabaseUrl, supabaseKey);
@@ -40,10 +40,7 @@ export default function Navbar() {
     
     checkSession();
 
-    const onScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    
+    const onScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     
@@ -66,73 +63,123 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-xl border-b border-[var(--color-border)] shadow-sm' : 'bg-white/50 backdrop-blur-xl border-b border-transparent'
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-md border-b border-neutral-200/60 shadow-[0_4px_30px_rgba(0,0,0,0.03)]' 
+          : 'bg-transparent'
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <Link href="/" className="group flex items-center gap-2 text-neutral-900">
+        <Link href="/" className="group flex items-center gap-2.5 transition-transform duration-300 hover:opacity-80">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-neutral-900 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
-          <span className="text-lg font-extrabold tracking-tight text-neutral-900">CareerGen</span>
+          <span className="text-[1.05rem] font-bold tracking-tight text-neutral-900">CareerGen</span>
         </Link>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <Link href="/" className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:text-neutral-900 hover:bg-neutral-50/80">Home</Link>
-          <Link href="/app" className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:text-neutral-900 hover:bg-neutral-50/80">Create CV</Link>
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-8">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
+              Home
+            </Link>
+            <Link href="/app" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
+              Create CV
+            </Link>
+          </div>
           
-          <div className="h-5 w-px bg-neutral-200 mx-2"></div>
+          <div className="h-4 w-px bg-neutral-200"></div>
 
           {userProfile ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <button 
                 type="button" 
                 onClick={() => window.dispatchEvent(new Event('open-topup'))} 
-                className="flex items-center gap-1.5 rounded-full bg-neutral-100/80 px-3.5 py-1.5 text-sm font-semibold text-neutral-700 hover:bg-neutral-200/80 transition-all shadow-sm border border-neutral-200 hover:-translate-y-px"
+                className="group flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:shadow"
               >
-                <span>💎</span>
+                <Gem className="h-3.5 w-3.5 text-blue-500" />
                 <span>{userProfile.credits_balance} Credits</span>
-                <svg className="h-3.5 w-3.5 ml-1 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
               </button>
               
               <div className="relative group">
-                <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-sm font-bold text-white shadow-[0_2px_8px_0_oklch(0_0_0_/_0.15)] ring-2 ring-white hover:scale-105 transition-transform duration-200">
-                  {userProfile.full_name ? userProfile.full_name.charAt(0).toUpperCase() : 'U'}
-                </div>
-                <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white/90 backdrop-blur-xl p-2 shadow-xl ring-1 ring-black/5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 origin-top-right translate-y-1 group-hover:translate-y-0">
-                  <div className="px-3 py-2 border-b border-neutral-100 mb-1">
-                    <p className="text-sm font-medium text-neutral-900 truncate">{userProfile.full_name}</p>
-                    <p className="text-xs text-[var(--color-text-muted)] truncate">{userProfile.email}</p>
+                <div className="flex items-center gap-2 cursor-pointer rounded-full border border-neutral-200 bg-white p-1 pr-3 hover:bg-neutral-50 transition-colors">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700">
+                    {userProfile.full_name ? userProfile.full_name.charAt(0).toUpperCase() : <User className="h-3 w-3" />}
                   </div>
-                  <button onClick={handleSignOut} className="w-full text-left cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-error)]/5 transition-colors">
+                  <ChevronDown className="h-3.5 w-3.5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
+                </div>
+
+                <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-neutral-100 bg-white p-2 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 origin-top-right translate-y-1 group-hover:translate-y-0">
+                  <div className="px-3 py-2.5 mb-1 rounded-xl bg-neutral-50/50">
+                    <p className="text-sm font-medium text-neutral-900 truncate">{userProfile.full_name}</p>
+                    <p className="text-xs text-neutral-500 truncate mt-0.5">{userProfile.email}</p>
+                  </div>
+                  <button 
+                    onClick={handleSignOut} 
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
                     Sign Out
                   </button>
                 </div>
               </div>
             </div>
           ) : (
-            <button onClick={handleSignIn} className="group relative inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white border border-neutral-200 hover:bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-all duration-200 shadow-sm hover:shadow">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              <span>Login with Google</span>
+            <button 
+              onClick={handleSignIn} 
+              className="inline-flex items-center justify-center rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Sign In
             </button>
           )}
         </div>
 
+        {/* Mobile Menu Toggle */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          className="relative flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg transition-colors hover:bg-neutral-100 md:hidden"
+          className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-white border border-neutral-200 text-neutral-600 transition-colors hover:bg-neutral-50"
         >
-          <span className={`h-0.5 w-5 bg-neutral-900 rounded-full transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`h-0.5 w-5 bg-neutral-900 rounded-full transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`h-0.5 w-5 bg-neutral-900 rounded-full transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
+      </div>
+
+      {/* Mobile Dropdown */}
+      <div className={`md:hidden absolute inset-x-0 top-full border-b border-neutral-200/60 bg-white/95 backdrop-blur-xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 visible translate-y-0 shadow-lg' : 'opacity-0 invisible -translate-y-2'}`}>
+        <div className="flex flex-col p-6 space-y-4">
+          <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">Home</Link>
+          <Link href="/app" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">Create CV</Link>
+          
+          <hr className="border-neutral-100" />
+          
+          {userProfile ? (
+            <>
+              <div className="flex flex-col space-y-1">
+                <span className="text-sm font-medium text-neutral-900">{userProfile.full_name}</span>
+                <span className="text-xs text-neutral-500">{userProfile.email}</span>
+                <span className="text-xs font-semibold text-blue-600 mt-1">{userProfile.credits_balance} Credits Available</span>
+              </div>
+              <button 
+                onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new Event('open-topup')); }}
+                className="w-full rounded-xl bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-100 transition-colors text-left"
+              >
+                Top Up Credits
+              </button>
+              <button 
+                onClick={handleSignOut}
+                className="w-full flex items-center gap-2 rounded-xl border border-red-100 bg-red-50/50 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <button 
+              onClick={handleSignIn}
+              className="w-full rounded-xl bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 text-center"
+            >
+              Sign In to Continue
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );

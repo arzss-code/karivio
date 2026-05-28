@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import InputForm from '@/components/InputForm';
 import ResultPreview from '@/components/ResultPreview';
 import TopUpModal from '@/components/TopUpModal';
@@ -63,11 +64,7 @@ export default function AppPage() {
           </div>
         </div>
       </main>
-      <footer className="bg-white border-t border-[var(--color-border)] py-12 mt-auto">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center text-sm text-[var(--color-text-muted)]">
-          <p>&copy; {new Date().getFullYear()} CareerGen. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
       <TopUpModal />
     </>
   );
