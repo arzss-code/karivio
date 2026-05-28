@@ -176,40 +176,57 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       <div className={`md:hidden absolute inset-x-0 top-full border-b border-neutral-200/60 bg-white/95 backdrop-blur-xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 visible translate-y-0 shadow-lg' : 'opacity-0 invisible -translate-y-2'}`}>
-        <div className="flex flex-col p-6 space-y-4">
-          <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">Home</Link>
-          <Link href="/app" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">Create CV</Link>
-          {userProfile && (
-            <Link href="/history" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">History</Link>
-          )}
+        <div className="flex flex-col px-6 py-8 space-y-6">
+          <div className="flex flex-col space-y-4">
+            <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">Home</Link>
+            <Link href="/app" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">Create CV</Link>
+            {userProfile && (
+              <Link href="/history" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">History</Link>
+            )}
+          </div>
 
-          <hr className="border-neutral-100" />
+          <div className="h-px w-full bg-neutral-100"></div>
 
           {userProfile ? (
-            <>
-              <div className="flex flex-col space-y-1">
-                <span className="text-sm font-medium text-neutral-900">{userProfile.full_name}</span>
-                <span className="text-xs text-neutral-500">{userProfile.email}</span>
-                <span className="text-xs font-semibold text-blue-600 mt-1">{userProfile.credits_balance} Credits Available</span>
+            <div className="flex flex-col space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-100 text-sm font-bold text-neutral-700 border border-neutral-200">
+                  {userProfile.full_name ? userProfile.full_name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-sm font-bold text-neutral-900 truncate">{userProfile.full_name}</span>
+                  <span className="text-xs text-neutral-500 truncate">{userProfile.email}</span>
+                </div>
               </div>
-              <button
-                onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new Event('open-topup')); }}
-                className="w-full rounded-xl bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-100 transition-colors text-left"
-              >
-                Top Up Credits
-              </button>
-              <button
-                onClick={handleSignOut}
-                className="w-full flex items-center gap-2 rounded-xl border border-red-100 bg-red-50/50 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
-              >
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </button>
-            </>
+
+              <div className="flex items-center justify-between rounded-2xl bg-neutral-50 p-4 border border-neutral-200/60 shadow-sm">
+                <div className="flex items-center gap-2.5">
+                  <Gem className="h-5 w-5 text-blue-500" />
+                  <span className="text-sm font-semibold text-neutral-700">Credits Available</span>
+                </div>
+                <span className="text-lg font-bold text-neutral-900">{userProfile.credits_balance}</span>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-2">
+                <button
+                  onClick={() => { setIsMenuOpen(false); window.dispatchEvent(new Event('open-topup')); }}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 py-3.5 text-sm font-bold text-white hover:bg-neutral-800 transition-colors shadow-sm active:scale-[0.98]"
+                >
+                  Top Up Credits
+                </button>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-4 py-3.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
           ) : (
             <button
               onClick={handleSignIn}
-              className="w-full rounded-xl bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 text-center"
+              className="w-full rounded-xl bg-neutral-900 px-4 py-4 text-base font-semibold text-white transition-colors hover:bg-neutral-800 text-center shadow-md active:scale-[0.98]"
             >
               Sign In to Continue
             </button>
