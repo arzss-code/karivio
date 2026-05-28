@@ -22,6 +22,10 @@ export const setGenerationResult = (result: any) => {
   generationState.set({ ...generationState.get(), isGenerating: false, result, error: null });
 };
 
+export const setGenerationType = (type: GenerationType) => {
+  generationState.set({ ...generationState.get(), type });
+};
+
 export const setGenerationError = (error: string) => {
   generationState.set({ ...generationState.get(), isGenerating: false, error });
 };

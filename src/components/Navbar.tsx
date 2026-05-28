@@ -115,6 +115,11 @@ export default function Navbar() {
             <Link href="/app" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
               Create CV
             </Link>
+            {userProfile && (
+              <Link href="/history" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
+                History
+              </Link>
+            )}
           </div>
           
           <div className="h-4 w-px bg-neutral-200"></div>
@@ -177,6 +182,9 @@ export default function Navbar() {
         <div className="flex flex-col p-6 space-y-4">
           <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">Home</Link>
           <Link href="/app" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">Create CV</Link>
+          {userProfile && (
+            <Link href="/history" onClick={() => setIsMenuOpen(false)} className="text-sm font-medium text-neutral-600 hover:text-neutral-900">History</Link>
+          )}
           
           <hr className="border-neutral-100" />
           
