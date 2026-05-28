@@ -20,7 +20,7 @@ export default function ResultPreview() {
     try {
       await generatePDF({
         content: state.result,
-        type: state.type,
+        type: (state.type ?? 'cv') as import('../lib/pdf-generator').ContentType,
         template: 'classic',
         fallbackName: 'My_Document'
       });
