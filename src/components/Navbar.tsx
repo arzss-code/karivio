@@ -56,7 +56,7 @@ export default function Navbar() {
           setUserProfile({
             id: session.user.id,
             full_name: session.user.user_metadata?.full_name || 'User',
-            email: session.user.email,
+            email: session.user.email || '',
             credits_balance: 0
           });
         }
