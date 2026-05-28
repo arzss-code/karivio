@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <style>
+    .bg {
+      fill: #111111;
+      transition: fill 0.3s ease;
+    }
+    .icon {
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .sparkle {
+      fill: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      .bg {
+        fill: #f5f5f5;
+      }
+      .icon {
+        stroke: #111111;
+      }
+      .sparkle {
+        fill: #111111;
+      }
+    }
+  </style>
+  <rect width="32" height="32" rx="8" class="bg" />
+  
+  <g transform="translate(6, 6) scale(0.833)">
+    <!-- Briefcase Body -->
+    <rect x="2" y="8" width="20" height="12" rx="2.5" class="icon" fill="none" />
+    
+    <!-- Briefcase Handle -->
+    <path d="M8 8V5a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 1 16 5v3" class="icon" fill="none" />
+    
+    <!-- Buckle / Lock -->
+    <rect x="11" y="8" width="2" height="3" rx="0.5" fill="none" class="icon" stroke-width="1.5" />
+    
+    <!-- Document Detail / Fold Line -->
+    <path d="M2 13h20" class="icon" opacity="0.3" stroke-width="1.5" />
+  </g>
+  
+  <!-- Sparkle (AI aspect) on top right -->
+  <path d="M23 6Q23 9 26 9Q23 9 23 12Q23 9 20 9Q23 9 23 6Z" class="sparkle" />
+</svg>
