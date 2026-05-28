@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { generationState } from '../lib/store';

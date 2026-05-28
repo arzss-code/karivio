@@ -1,105 +1,90 @@
-Product Requirements Document (PRD)
+# Product Requirements Document (PRD)
 
-Proyek: AI-Powered Resume & Cover Letter Generator (Micro-SaaS)
-Platform: Web Application
+**Proyek:** Careergen - AI-Powered Resume & Cover Letter Generator (Micro-SaaS)  
+**Platform:** Web Application  
+**Tipe Arsitektur:** Astro Islands (Astro SSR + React)  
+**Deployment:** Vercel  
 
-Framework: Astro (Mode SSR)
+---
 
-Deployment: Vercel
+## 1. Latar Belakang & Tujuan
 
-1. Latar Belakang & Tujuan
+Proses membuat CV (Resume) dan Cover Letter (Surat Lamaran) yang disesuaikan (*tailored*) untuk setiap lowongan pekerjaan sering memakan waktu lama. Banyak pencari kerja kesulitan merangkai kata-kata profesional dan menyusun format yang ramah mesin pelacak pelamar (*ATS - Applicant Tracking System*).
 
-Proses membuat CV (Resume) dan Cover Letter (Surat Lamaran) yang disesuaikan (tailored) untuk setiap lowongan pekerjaan memakan waktu lama. Seringkali, pencari kerja kesulitan merangkai kata-kata profesional.
-Tujuan produk ini: Menyediakan alat (tool) berbasis web yang cepat untuk mengubah poin-poin kasar pengalaman kerja menjadi CV dan surat lamaran profesional dalam hitungan detik menggunakan bantuan AI, sekaligus menjadi mesin bisnis (SaaS) bagi kreatornya.
+**Tujuan Produk:** 
+Menyediakan alat (tool) berbasis web yang sangat cepat untuk mengubah poin-poin kasar pengalaman kerja menjadi CV dan surat lamaran profesional dalam hitungan detik menggunakan bantuan AI. Produk ini juga dirancang sebagai mesin bisnis (SaaS) mandiri bagi kreatornya dengan sistem monetisasi berbasis kredit.
 
-2. Target Pengguna
+---
 
-Mahasiswa tingkat akhir / Fresh Graduate yang butuh CV untuk magang/pekerjaan pertama.
+## 2. Target Pengguna
 
-Profesional muda yang ingin melamar pekerjaan spesifik dan butuh Cover Letter yang disesuaikan dengan deskripsi pekerjaan (Job Desk).
+- **Mahasiswa Tingkat Akhir / Fresh Graduate:** Membutuhkan CV pertama untuk magang atau pekerjaan perdana tanpa pusing memikirkan tata letak.
+- **Profesional Muda:** Ingin melamar posisi spesifik dan membutuhkan *Cover Letter* yang sangat disesuaikan dengan deskripsi pekerjaan (*Job Description*) dari lowongan tersebut.
 
-3. Spesifikasi Teknis (Tech Stack)
+---
 
-Frontend & Meta-framework: Astro (Mode SSR).
+## 3. Spesifikasi Teknis (Tech Stack Terkini)
 
-Styling: Tailwind CSS v4.
+- **Meta-Framework Utama:** Astro (Mode SSR).
+- **UI Framework (Islands):** React & Preact (digunakan khusus untuk komponen super-interaktif seperti Multi-step Wizard Form).
+- **State Management & Form:** `nanostores` (untuk *global state* lintas komponen), `react-hook-form`, dan `Zod` (untuk validasi data sisi klien).
+- **Styling:** Tailwind CSS v4 (dilengkapi dengan *micro-interactions* dan animasi CSS khusus).
+- **Backend / API Engine:** Astro Server Endpoints (`/api/...`).
+- **AI Engine:** Google Gemini API.
+- **Database, Auth & RPC:** Supabase (PostgreSQL + Google OAuth). Memanfaatkan fitur **RPC (Remote Procedure Call)** Postgres untuk menjamin keamanan transaksi pemotongan dan penambahan kredit (mencegah *race condition*).
+- **Payment Gateway:** Midtrans (dengan validasi *webhook signature* ganda).
+- **PDF Generation:** *Native Browser Print API* (`window.print()`) yang dikombinasikan dengan media query `@media print` CSS khusus untuk menjamin format murni ATS-Friendly (Tanpa bergantung pada *library* berat).
 
-Backend / API Engine: Astro Server Endpoints.
+---
 
-AI Integration: Google Gemini API (memanfaatkan free tier untuk awal, siap scale up jika berbayar).
+## 4. Fitur Utama (MVP)
 
-Database & Auth (Baru untuk SaaS): Supabase (PostgreSQL + Google OAuth) untuk menyimpan sistem credit pengguna.
+### A. Autentikasi & Penyimpanan Progres
+- Pengguna wajib login menggunakan **Google Account (OAuth)** untuk menggunakan layanan.
+- Autentikasi dikelola oleh Supabase, dan data profil pengguna (termasuk saldo kredit) otomatis dibuat melalui *Database Trigger*.
 
-Payment Gateway (Baru untuk SaaS): Midtrans (untuk target pasar Indonesia - QRIS/GoPay) atau Stripe (untuk pasar global).
+### B. Form Wizard Interaktif (Input)
+- Antarmuka *Step-by-step* (Langkah 1 sampai 4) berbasis React.
+- Input data diri, riwayat pendidikan, proyek, pengalaman kerja kasar, dan Deskripsi Pekerjaan (Target Job).
+- Validasi form sisi klien (*real-time*) sebelum dikirim ke AI, memastikan pengguna tidak membuang kredit untuk form kosong.
 
-PDF Generation: Library klien seperti html2pdf.js atau @react-pdf/renderer.
+### C. AI Engine & Credit System
+- Pemilihan tipe dokumen: *Generate CV* atau *Generate Cover Letter*.
+- Pilihan bahasa keluaran otomatis dari AI (Bahasa Inggris atau Indonesia).
+- **Transaksi Atomik Database:** Pemotongan saldo kredit (pengurangan 1 kredit) dan penyimpanan data dokumen (*save document*) dilakukan di dalam **satu transaksi database terpadu** (RPC) demi keamanan dan mencegah hilangnya kredit pengguna secara sepihak akibat gagal jaringan.
 
-Hosting: Vercel.
+### D. Preview & Ekspor Dokumen
+- Tampilan pratinjau instan di sisi kanan (*split-screen*) lengkap dengan efek *Skeleton Loader* saat AI bekerja.
+- Tersedia opsi ganti tata letak (Template Klasik ATS, Modern, Minimalis).
+- Ekspor satu klik ke PDF dengan standar ATS tinggi (format Harvard) murni tanpa *watermark*.
 
-4. Fitur Utama (MVP)
+---
 
-A. Input Form & Auth
+## 5. Strategi Monetisasi (Model Freemium / Kredit)
 
-Login menggunakan Google (OAuth) agar pengguna bisa menyimpan progress dan sistem bisa melacak credits.
+Ini adalah model utama yang diimplementasikan di dalam basis kode:
 
-Form teks area untuk menempelkan pengalaman kerja kasar atau Job Description.
+1. **Gratis di Awal (Onboarding):** Setiap pengguna baru yang mendaftar mendapat saldo **3 Kredit Gratis**.
+2. **Top-Up Mikro:** Jika kredit habis, sistem memblokir form dan menawarkan *pop-up* pembelian kredit melalui QRIS Midtrans.
+   - Contoh Harga: **Rp 10.000 untuk 10x Generate**.
+3. **Alur Webhook Aman:** Setelah pengguna membayar via GoPay/QRIS, Midtrans mengirimkan *webhook* ke API Astro. API memvalidasi kunci rahasia (*signature*) dan menambah saldo pengguna secara atomik (RPC `add_credits`).
 
-B. AI Engine & Credit System (Monetisasi)
+---
 
-Tombol "Generate CV / Cover Letter".
+## 6. Alur Pengguna (User Flow)
 
-Sistem Kredit: Setiap kali generate, saldo kredit pengguna berkurang 1.
+1. **Landing Page:** Penjelasan keunggulan web dan ajakan "Create Your Perfect Resume".
+2. **Auth:** Pengguna login dengan Google.
+3. **Dashboard:** Pengguna dialihkan ke halaman pembuat CV (`/app`), melihat sisa kredit di menu/profil.
+4. **Wizard Form:** Pengisi form langkah demi langkah.
+5. **Processing:** Klik tombol Generate -> Muncul *loading skeleton* -> Sistem API validasi saldo -> Memanggil Gemini -> Transaksi DB (Kredit -1, Simpan Dokumen) -> Hasil ditampilkan.
+6. **Download:** Pengguna menyesuaikan *template* dan klik *Download PDF*.
+7. **Top Up (Jika Habis):** Muncul peringatan "Kredit Habis" dan diarahkan ke proses pembayaran Midtrans.
 
-C. Preview, Editor & Export
+---
 
-Area live preview hasil AI dengan text editor sederhana.
+## 7. Batasan & Keamanan Infrastruktur
 
-Download as PDF (Template ATS-Friendly).
-
-5. Strategi Monetisasi
-
-Pilih salah satu atau kombinasi dari model bisnis berikut:
-
-Model 1: Freemium / Sistem Kredit (Paling Direkomendasikan)
-
-Pengguna baru mendapat 3 Kredit Gratis saat mendaftar.
-
-Jika kredit habis, tawarkan paket Top-Up mikro. Contoh:
-
-Rp 10.000 untuk 10x Generate.
-
-Rp 25.000 untuk 30x Generate + Akses Template PDF Premium.
-
-Kenapa ini bagus? Pengguna bisa mencoba kualitas AI secara gratis. Jika mereka suka dan merasa terbantu mendapat panggilan interview, bayar Rp 10rb sangatlah murah bagi pencari kerja.
-
-Model 2: Premium Export (Watermark)
-
-Generate teks pakai AI 100% gratis dan unlimited.
-
-Jika pengguna ingin mengunduh PDF, hasil PDF akan ada watermark kecil "Generated by [Nama Web]".
-
-Pengguna harus bayar (misal Rp 15.000) untuk menghilangkan watermark dan mengunduh versi resolusi tinggi.
-
-Model 3: Afiliasi & Ads (Tanpa Bayar dari User)
-
-Web tetap 100% gratis tanpa login.
-
-Cuan didapat dari memasang iklan (Google AdSense) atau link Afiliasi ke Bootcamp pemrograman/karir, layanan perbaikan CV manusia (profesional), atau portal lowongan kerja.
-
-6. Alur Pengguna (User Flow)
-
-Landing Page: Penjelasan keunggulan web dan Call to Action "Coba Gratis Sekarang".
-
-Auth: Pengguna login dengan Google Account.
-
-Dashboard: Pengguna melihat sisa credit mereka (misal: 3/3).
-
-Processing: Mengisi form -> Klik Generate -> Sisa credit menjadi 2/3.
-
-Top Up (Jika credit habis): Muncul pop-up "Kredit Habis. Beli 10 Kredit seharga Rp 10.000 via QRIS".
-
-7. Batasan & Keamanan (Security Constraints)
-
-API Security: API Key AI dan Secret Key Payment Gateway wajib diletakkan di file .env.
-
-Rate Limiting: Sangat krusial! Astro Server endpoint harus memvalidasi saldo user di database sebelum memanggil API AI untuk mencegah kerugian finansial akibat spamming.
+1. **Keamanan Kunci:** API Key Gemini (`GEMINI_API_KEY`) dan Key Midtrans disimpan sebagai environment variables (tidak pernah terekspos ke sisi klien).
+2. **Rate Limiting:** Terdapat sistem pembatas permintaan (*rate limiter*) pada endpoint `/api/generate-cv` untuk mencegah serangan eksploitasi API massal (DDoS tingkat aplikasi).
+3. **Integritas Saldo:** Tidak pernah melakukan pengurangan saldo kredit melalui dua *query* terpisah di klien atau *server functions* standar, melainkan 100% menggunakan fungsi khusus Postgres (`SECURITY DEFINER`) untuk menjaga konsistensi finansial dari ancaman modifikasi serentak (*race conditions*).

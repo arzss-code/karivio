@@ -3,3 +3,4 @@ allowBuilds:
   esbuild: false
   protobufjs: false
   sharp: false
+  unrs-resolver: set this to true or false
