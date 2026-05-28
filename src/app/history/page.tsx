@@ -208,44 +208,46 @@ export default function HistoryPage() {
 
           {/* Document List */}
           {!isLoading && documents.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="group rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all duration-200"
+                  className="rounded-2xl border border-neutral-200 bg-white shadow-sm hover:shadow-md hover:border-neutral-300 transition-all duration-200 overflow-hidden"
                 >
-                  <div className="flex items-start gap-5">
-                    {/* Icon */}
-                    <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-100 text-neutral-600 border border-neutral-200">
-                      <FileText className="h-5 w-5" />
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      {/* Icon */}
+                      <div className="shrink-0 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-neutral-100 text-neutral-600 border border-neutral-200">
+                        <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <h3 className="text-sm font-bold text-neutral-900 truncate max-w-[160px] sm:max-w-none">{getDocTitle(doc)}</h3>
+                          <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                            doc.document_type === 'resume'
+                              ? 'bg-neutral-900 text-white'
+                              : 'bg-neutral-100 text-neutral-600 border border-neutral-200'
+                          }`}>
+                            {doc.document_type === 'resume' ? 'CV' : 'Cover Letter'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-500 leading-relaxed line-clamp-2 mb-2">
+                          {getDocPreview(doc)}
+                        </p>
+                        <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+                          <Clock className="h-3 w-3 shrink-0" />
+                          <span>{formatDate(doc.created_at)}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <h3 className="text-sm font-bold text-neutral-900 truncate">{getDocTitle(doc)}</h3>
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                          doc.document_type === 'resume'
-                            ? 'bg-neutral-900 text-white'
-                            : 'bg-neutral-100 text-neutral-600 border border-neutral-200'
-                        }`}>
-                          {doc.document_type === 'resume' ? 'CV' : 'Cover Letter'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-neutral-500 leading-relaxed line-clamp-2 mb-3">
-                        {getDocPreview(doc)}
-                      </p>
-                      <div className="flex items-center gap-1.5 text-xs text-neutral-400">
-                        <Clock className="h-3.5 w-3.5" />
-                        {formatDate(doc.created_at)}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="shrink-0 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    {/* Actions — always visible, stacks below content on mobile */}
+                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-neutral-100">
                       <button
                         onClick={() => handleLoad(doc)}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3.5 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors shadow-sm"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 active:scale-95 transition-all shadow-sm"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         View
@@ -253,7 +255,7 @@ export default function HistoryPage() {
                       <button
                         onClick={() => handleDelete(doc.id)}
                         disabled={deletingId === doc.id}
-                        className="inline-flex items-center justify-center rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-100 transition-colors disabled:opacity-60"
+                        className="inline-flex items-center justify-center rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-100 active:scale-95 transition-all disabled:opacity-60 disabled:active:scale-100"
                       >
                         {deletingId === doc.id
                           ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
