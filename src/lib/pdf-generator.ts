@@ -41,7 +41,7 @@ async function loadPdfMake() {
 }
 
 function getClassicCVTemplate(data: any): any {
-  const { header, summary, experience, education, projects, skills } = data;
+  const { header, summary, experience, education, projects, skills, achievements, certifications } = data;
   
   const contentItems = [];
   
@@ -67,9 +67,9 @@ function getClassicCVTemplate(data: any): any {
   };
 
   // Summary
-  if (summary) {
+  if (summary && typeof summary === 'string') {
     addSectionTitle('PROFESSIONAL SUMMARY');
-    contentItems.push({ text: summary, margin: [0, 0, 0, 12] as number[] });
+    contentItems.push({ text: summary, alignment: 'justify', margin: [0, 0, 0, 12] as number[] });
   }
 
   // Experience
@@ -83,9 +83,10 @@ function getClassicCVTemplate(data: any): any {
         ],
         margin: [0, 0, 0, 4] as number[]
       });
-      if (exp.description && exp.description.length > 0) {
+      if (exp.description && Array.isArray(exp.description) && exp.description.length > 0) {
         contentItems.push({
-          ul: exp.description,
+          ul: exp.description.filter((b: any) => typeof b === 'string'),
+          alignment: 'justify',
           margin: [10, 0, 0, 10] as number[]
         });
       }
@@ -113,16 +114,52 @@ function getClassicCVTemplate(data: any): any {
   }
 
   // Education
-  if (education && education.length > 0) {
+  if (education && Array.isArray(education) && education.length > 0) {
     addSectionTitle('EDUCATION');
     education.forEach((edu: any) => {
+      const eduLeft: any[] = [];
+      if (typeof edu.degree === 'string') eduLeft.push({ text: edu.degree, bold: true });
+      if (typeof edu.institution === 'string') eduLeft.push({ text: ', ' }, { text: edu.institution, italics: true });
       contentItems.push({
         columns: [
-          { text: [{ text: edu.degree, bold: true }, ', ', { text: edu.institution, italics: true }], width: '*' },
-          { text: edu.date, width: 'auto', alignment: 'right' }
+          { text: eduLeft, width: '*' },
+          { text: typeof edu.date === 'string' ? edu.date : '', width: 'auto', alignment: 'right' }
         ],
-        margin: [0, 0, 0, 6] as number[]
+        margin: [0, 0, 0, 2] as number[]
       });
+      if (edu.gpa || edu.description) {
+        const metaParts = [];
+        if (typeof edu.gpa === 'string' && edu.gpa) metaParts.push(`GPA: ${edu.gpa}`);
+        if (typeof edu.description === 'string' && edu.description) metaParts.push(edu.description);
+        contentItems.push({ text: metaParts.join('  |  '), fontSize: 9, color: '#444', margin: [0, 0, 0, 6] as number[] });
+      } else {
+        contentItems.push({ text: '', margin: [0, 0, 0, 6] as number[] });
+      }
+    });
+  }
+
+  // Achievements
+  if (achievements && Array.isArray(achievements) && achievements.length > 0) {
+    addSectionTitle('ACHIEVEMENTS');
+    contentItems.push({
+      ul: achievements.filter((a: any) => typeof a === 'string'),
+      margin: [10, 0, 0, 10] as number[]
+    });
+  }
+
+  // Certifications
+  if (certifications && Array.isArray(certifications) && certifications.length > 0) {
+    addSectionTitle('CERTIFICATIONS');
+    certifications.forEach((cert: any) => {
+      if (typeof cert === 'string') {
+        contentItems.push({ text: cert, margin: [0, 0, 0, 4] as number[] });
+      } else {
+        const parts: any[] = [];
+        if (typeof cert.name === 'string') parts.push({ text: cert.name, bold: true });
+        if (typeof cert.issuer === 'string' && cert.issuer) parts.push({ text: ` — ${cert.issuer}` });
+        if (typeof cert.date === 'string' && cert.date) parts.push({ text: ` (${cert.date})` });
+        contentItems.push({ text: parts, margin: [0, 0, 0, 4] as number[] });
+      }
     });
   }
 

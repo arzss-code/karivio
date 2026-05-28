@@ -17,6 +17,8 @@ const formSchema = z.object({
       degree: z.string().min(1, 'Degree/Major is required'),
       institution: z.string().min(1, 'Institution is required'),
       year: z.string().optional(),
+      gpa: z.string().optional(),
+      description: z.string().optional(),
     })
   ).optional(),
   projects: z.array(
@@ -33,6 +35,8 @@ const formSchema = z.object({
       description: z.string().min(10, 'Please describe your responsibilities'),
     })
   ).min(1, 'At least one experience is required'),
+  achievements: z.string().optional(),
+  certifications: z.string().optional(),
   jobDescription: z.string().min(10, 'Job description must be at least 10 characters'),
   language: z.enum(['auto', 'en', 'id']),
 });
@@ -58,6 +62,8 @@ export default function InputForm() {
       experience: [{ title: '', company: '', duration: '', description: '' }],
       education: [],
       projects: [],
+      achievements: '',
+      certifications: '',
     },
   });
 
@@ -107,7 +113,12 @@ export default function InputForm() {
     ).join('\n\n');
 
     let educationText = data.education && data.education.length > 0 
-      ? data.education.map(e => `${e.degree} from ${e.institution} (${e.year || 'N/A'})`).join('\n')
+      ? data.education.map(e => {
+          let str = `${e.degree} from ${e.institution} (${e.year || 'N/A'})`;
+          if (e.gpa) str += ` | GPA: ${e.gpa}`;
+          if (e.description) str += `\nDetails: ${e.description}`;
+          return str;
+        }).join('\n')
       : 'None provided';
 
     let projectsText = data.projects && data.projects.length > 0
@@ -119,6 +130,8 @@ export default function InputForm() {
       experience: experienceText,
       education: educationText,
       projects: projectsText,
+      achievements: data.achievements || '',
+      certifications: data.certifications || '',
       jobDescription: data.jobDescription,
       language: data.language,
     };
@@ -244,16 +257,24 @@ export default function InputForm() {
                   </div>
                   <div>
                     <label className="mb-1.5 block text-xs font-semibold text-neutral-600">Institution <span className="text-red-500">*</span></label>
-                    <input {...register(`education.${index}.institution` as const)} className="form-input w-full rounded-lg border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400" placeholder="University of Technology" />
+                    <input {...register(`education.${index}.institution` as const)} className="form-input w-full rounded-lg border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400" placeholder="Politeknik Negeri Semarang" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-neutral-600">Year</label>
+                    <input {...register(`education.${index}.year` as const)} className="form-input w-full rounded-lg border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400" placeholder="2020 - 2024" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-neutral-600">GPA <span className="text-neutral-400 font-normal">(optional)</span></label>
+                    <input {...register(`education.${index}.gpa` as const)} className="form-input w-full rounded-lg border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400" placeholder="3.80 / 4.00" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="mb-1.5 block text-xs font-semibold text-neutral-600">Year</label>
-                    <input {...register(`education.${index}.year` as const)} className="form-input w-full rounded-lg border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400" placeholder="2018 - 2022" />
+                    <label className="mb-1.5 block text-xs font-semibold text-neutral-600">Relevant Coursework / Notes <span className="text-neutral-400 font-normal">(optional)</span></label>
+                    <input {...register(`education.${index}.description` as const)} className="form-input w-full rounded-lg border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400" placeholder="Relevant coursework: Algorithms, Machine Learning, Database Systems" />
                   </div>
                 </div>
               </div>
             ))}
-            <button type="button" onClick={() => appendEdu({ degree: '', institution: '', year: '' })} className="flex items-center gap-2 text-sm font-semibold text-neutral-700 hover:text-neutral-900 bg-neutral-100 px-4 py-2.5 rounded-xl transition-colors">
+            <button type="button" onClick={() => appendEdu({ degree: '', institution: '', year: '', gpa: '', description: '' })} className="flex items-center gap-2 text-sm font-semibold text-neutral-700 hover:text-neutral-900 bg-neutral-100 px-4 py-2.5 rounded-xl transition-colors">
               <Plus className="h-4 w-4" /> Add Education
             </button>
           </div>
@@ -283,6 +304,33 @@ export default function InputForm() {
             <button type="button" onClick={() => appendProj({ name: '', description: '' })} className="flex items-center gap-2 text-sm font-semibold text-neutral-700 hover:text-neutral-900 bg-neutral-100 px-4 py-2.5 rounded-xl transition-colors">
               <Plus className="h-4 w-4" /> Add Project
             </button>
+          </div>
+
+          {/* Achievements & Certifications */}
+          <div className="mt-12 mb-6">
+            <h2 className="text-2xl font-bold text-neutral-900">Achievements <span className="text-sm font-normal text-neutral-400 ml-1">(optional)</span></h2>
+            <p className="text-sm text-neutral-500 mt-1">Awards, honors, or notable accomplishments.</p>
+          </div>
+          <div>
+            <textarea
+              {...register('achievements')}
+              rows={3}
+              className="form-input w-full rounded-xl border-neutral-200 bg-neutral-50 px-4 py-3 text-sm focus:border-neutral-400 focus:ring-0"
+              placeholder="- 1st Place, National Programming Competition 2023&#10;- Dean's List, 4 consecutive semesters"
+            ></textarea>
+          </div>
+
+          <div className="mt-10 mb-6">
+            <h2 className="text-2xl font-bold text-neutral-900">Certifications <span className="text-sm font-normal text-neutral-400 ml-1">(optional)</span></h2>
+            <p className="text-sm text-neutral-500 mt-1">Professional certificates or courses completed.</p>
+          </div>
+          <div>
+            <textarea
+              {...register('certifications')}
+              rows={3}
+              className="form-input w-full rounded-xl border-neutral-200 bg-neutral-50 px-4 py-3 text-sm focus:border-neutral-400 focus:ring-0"
+              placeholder="- AWS Certified Developer Associate (2024)&#10;- Google Data Analytics Certificate (Coursera, 2023)"
+            ></textarea>
           </div>
         </div>
 

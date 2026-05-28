@@ -14,7 +14,9 @@ export function getCVPrompt(
   experience: string, 
   education: string, 
   projects: string, 
-  jobDescription: string
+  jobDescription: string,
+  achievements?: string,
+  certifications?: string,
 ): string {
   return `Based on the following information, generate a professional resume structured in JSON format.
 
@@ -30,7 +32,7 @@ ${education}
 Project Details:
 ${projects}
 
-Target Job Description:
+${achievements ? `Achievements:\n${achievements}\n\n` : ''}${certifications ? `Certifications:\n${certifications}\n\n` : ''}Target Job Description:
 ${jobDescription}
 
 Guidelines for the JSON output:
@@ -58,7 +60,9 @@ Guidelines for the JSON output:
     {
       "degree": "Degree Name",
       "institution": "Institution Name",
-      "date": "Year - Year"
+      "date": "Year - Year",
+      "gpa": "GPA (if provided, else omit key)",
+      "description": "Short description of relevant coursework or honors (if provided, else omit key)"
     }
   ],
   "projects": [
@@ -68,14 +72,28 @@ Guidelines for the JSON output:
       "details": ["Bullet point 1", "Bullet point 2"]
     }
   ],
+  "achievements": [
+    "Achievement 1",
+    "Achievement 2"
+  ],
+  "certifications": [
+    {
+      "name": "Certification Name",
+      "issuer": "Issuing Organization",
+      "date": "Year (if known)"
+    }
+  ],
   "skills": ["Skill 1", "Skill 2", "Skill 3"]
 }
-2. Start each experience and project bullet with a strong action verb (Engineered, Optimized, Spearheaded, Led, Developed, etc.)
-3. Follow STAR: embed Situation context, the Task, specific Actions taken, and measurable Results
-4. Quantify results with percentages, dollar amounts, time saved, or team sizes where data is provided
-5. Include relevant technical skills and keywords from the job description naturally
-6. Generate 3-5 bullet points per experience/project
-7. ONLY output the JSON object, without markdown formatting like \`\`\`json or any other text.`;
+2. Only include "achievements" key if achievement data is provided. Otherwise omit it entirely.
+3. Only include "certifications" key if certification data is provided. Otherwise omit it entirely.
+4. Only include "gpa" and "description" inside education items if the data was provided.
+5. Start each experience and project bullet with a strong action verb (Engineered, Optimized, Spearheaded, Led, Developed, etc.)
+6. Follow STAR: embed Situation context, the Task, specific Actions taken, and measurable Results
+7. Quantify results with percentages, dollar amounts, time saved, or team sizes where data is provided
+8. Include relevant technical skills and keywords from the job description naturally
+9. Generate 3-5 bullet points per experience/project
+10. ONLY output the JSON object, without markdown formatting like \`\`\`json or any other text.`;
 }
 
 export function getCoverLetterSystemInstruction(language: string): string {

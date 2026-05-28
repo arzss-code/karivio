@@ -44,6 +44,8 @@ export async function POST(request: Request) {
       experience = '', 
       education = '',
       projects = '',
+      achievements = '',
+      certifications = '',
       jobDescription = '', 
       language = 'auto' 
     } = body;
@@ -60,7 +62,7 @@ export async function POST(request: Request) {
 
     // Generate
     const systemInstruction = getCVSystemInstruction(language);
-    const prompt = getCVPrompt(personalInfo, experience, education, projects, jobDescription);
+    const prompt = getCVPrompt(personalInfo, experience, education, projects, jobDescription, achievements, certifications);
     const resultText = await generateContent(prompt, systemInstruction, 3, true);
     
     // Attempt to parse JSON safely

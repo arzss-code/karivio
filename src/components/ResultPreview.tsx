@@ -69,8 +69,12 @@ export default function ResultPreview() {
   );
 
   const renderCV = (data: any) => {
-    if (!data) return null;
-    const { header, summary, experience, education, projects, skills } = data;
+    // Safety guard: if data is not a plain object (e.g. pdfmake internal), abort
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
+    // Check for pdfmake leak (objects with _inlines keys)
+    if ('_inlines' in data || 'content' in data) return null;
+    
+    const { header, summary, experience, education, projects, skills, achievements, certifications } = data;
 
     return (
       <div className="cv-document">
@@ -121,16 +125,26 @@ export default function ResultPreview() {
           }
           .cv-item-date {
             white-space: nowrap;
+            font-size: 10pt;
           }
           .cv-bullets {
             margin: 0;
             padding-left: 18px;
+            text-align: justify;
           }
           .cv-bullets li {
             margin-bottom: 4px;
           }
           .cv-skills-text {
             line-height: 1.6;
+          }
+          .cv-summary {
+            text-align: justify;
+          }
+          .cv-edu-meta {
+            font-size: 10pt;
+            color: #444;
+            margin-top: 2px;
           }
           
           @media print {
@@ -160,36 +174,36 @@ export default function ResultPreview() {
 
         {header && (
           <div className="cv-header">
-            <div className="cv-name">{header.name}</div>
+            <div className="cv-name">{typeof header.name === 'string' ? header.name : ''}</div>
             <div className="cv-contact">
-              {[header.email, header.phone, header.linkedin].filter(Boolean).join('  |  ')}
+              {[header.email, header.phone, header.linkedin].filter(v => typeof v === 'string' && v).join('  |  ')}
             </div>
           </div>
         )}
 
-        {summary && (
+        {summary && typeof summary === 'string' && (
           <>
             <div className="cv-section-title">Professional Summary</div>
             <div className="cv-summary">{summary}</div>
           </>
         )}
 
-        {experience && experience.length > 0 && (
+        {experience && Array.isArray(experience) && experience.length > 0 && (
           <>
             <div className="cv-section-title">Professional Experience</div>
             {experience.map((exp: any, i: number) => (
               <div key={i} className="cv-item">
                 <div className="cv-item-header">
                   <div>
-                    <span className="cv-item-title">{exp.title}</span>,{' '}
-                    <span className="cv-item-subtitle">{exp.company}</span>
+                    <span className="cv-item-title">{typeof exp.title === 'string' ? exp.title : ''}</span>,{' '}
+                    <span className="cv-item-subtitle">{typeof exp.company === 'string' ? exp.company : ''}</span>
                   </div>
-                  <div className="cv-item-date">{exp.date}</div>
+                  <div className="cv-item-date">{typeof exp.date === 'string' ? exp.date : ''}</div>
                 </div>
-                {exp.description && (
+                {Array.isArray(exp.description) && (
                   <ul className="cv-bullets">
-                    {exp.description.map((b: string, j: number) => (
-                      <li key={j}>{b}</li>
+                    {exp.description.map((b: any, j: number) => (
+                      typeof b === 'string' ? <li key={j}>{b}</li> : null
                     ))}
                   </ul>
                 )}
@@ -198,19 +212,21 @@ export default function ResultPreview() {
           </>
         )}
 
-        {projects && projects.length > 0 && (
+        {projects && Array.isArray(projects) && projects.length > 0 && (
           <>
             <div className="cv-section-title">Projects</div>
             {projects.map((proj: any, i: number) => (
               <div key={i} className="cv-item">
                 <div className="cv-item-header">
-                  <span className="cv-item-title">{proj.name}</span>
+                  <span className="cv-item-title">{typeof proj.name === 'string' ? proj.name : ''}</span>
                 </div>
-                {proj.description && <div className="cv-item-subtitle mb-1" style={{ fontSize: '10pt' }}>{proj.description}</div>}
-                {proj.details && (
+                {typeof proj.description === 'string' && proj.description && (
+                  <div className="cv-item-subtitle mb-1" style={{ fontSize: '10pt' }}>{proj.description}</div>
+                )}
+                {Array.isArray(proj.details) && (
                   <ul className="cv-bullets">
-                    {proj.details.map((b: string, j: number) => (
-                      <li key={j}>{b}</li>
+                    {proj.details.map((b: any, j: number) => (
+                      typeof b === 'string' ? <li key={j}>{b}</li> : null
                     ))}
                   </ul>
                 )}
@@ -219,28 +235,61 @@ export default function ResultPreview() {
           </>
         )}
 
-        {education && education.length > 0 && (
+        {education && Array.isArray(education) && education.length > 0 && (
           <>
             <div className="cv-section-title">Education</div>
             {education.map((edu: any, i: number) => (
-              <div key={i} className="cv-item" style={{ marginBottom: '4px' }}>
+              <div key={i} className="cv-item" style={{ marginBottom: '6px' }}>
                 <div className="cv-item-header">
                   <div>
-                    <span className="cv-item-title">{edu.degree}</span>,{' '}
-                    <span className="cv-item-subtitle">{edu.institution}</span>
+                    <span className="cv-item-title">{typeof edu.degree === 'string' ? edu.degree : ''}</span>,{' '}
+                    <span className="cv-item-subtitle">{typeof edu.institution === 'string' ? edu.institution : ''}</span>
                   </div>
-                  <div className="cv-item-date">{edu.date}</div>
+                  <div className="cv-item-date">{typeof edu.date === 'string' ? edu.date : ''}</div>
                 </div>
+                {(edu.gpa || edu.description) && (
+                  <div className="cv-edu-meta">
+                    {typeof edu.gpa === 'string' && edu.gpa && <span>GPA: {edu.gpa}{edu.description ? '  |  ' : ''}</span>}
+                    {typeof edu.description === 'string' && edu.description && <span>{edu.description}</span>}
+                  </div>
+                )}
               </div>
             ))}
           </>
         )}
 
-        {skills && skills.length > 0 && (
+        {achievements && Array.isArray(achievements) && achievements.length > 0 && (
+          <>
+            <div className="cv-section-title">Achievements</div>
+            <ul className="cv-bullets">
+              {achievements.map((a: any, i: number) => (
+                typeof a === 'string' ? <li key={i}>{a}</li> : null
+              ))}
+            </ul>
+          </>
+        )}
+
+        {certifications && Array.isArray(certifications) && certifications.length > 0 && (
+          <>
+            <div className="cv-section-title">Certifications</div>
+            {certifications.map((cert: any, i: number) => {
+              if (typeof cert === 'string') return <div key={i} style={{ marginBottom: 4 }}>{cert}</div>;
+              return (
+                <div key={i} style={{ marginBottom: 4 }}>
+                  <span className="cv-item-title">{typeof cert.name === 'string' ? cert.name : ''}</span>
+                  {cert.issuer && typeof cert.issuer === 'string' && <span> — {cert.issuer}</span>}
+                  {cert.date && typeof cert.date === 'string' && <span className="cv-item-date"> ({cert.date})</span>}
+                </div>
+              );
+            })}
+          </>
+        )}
+
+        {skills && Array.isArray(skills) && skills.length > 0 && (
           <>
             <div className="cv-section-title">Skills</div>
             <div className="cv-skills-text">
-              {skills.join(' • ')}
+              {skills.filter((s: any) => typeof s === 'string').join(' • ')}
             </div>
           </>
         )}
