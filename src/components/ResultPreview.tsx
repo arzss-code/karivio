@@ -3,13 +3,33 @@ import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { generationState } from '../lib/store';
 import { FileText, Loader2, Download, Settings2, Printer } from 'lucide-react';
+import { generatePDF } from '../lib/pdf-generator';
 
 export default function ResultPreview() {
   const state = useStore(generationState);
   const [template, setTemplate] = useState('classic');
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const handleDownload = () => {
+  const handlePrint = () => {
     window.print();
+  };
+
+  const handleDirectDownload = async () => {
+    if (!state.result) return;
+    setIsDownloading(true);
+    try {
+      await generatePDF({
+        content: state.result,
+        type: state.type,
+        template: 'classic',
+        fallbackName: 'My_Document'
+      });
+    } catch (error) {
+      console.error('Failed to generate PDF directly:', error);
+      alert('Failed to download PDF. You can still use the Print option.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const renderEmptyState = () => (
@@ -269,25 +289,34 @@ export default function ResultPreview() {
         
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-6 py-4 bg-neutral-50 shrink-0">
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <select 
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
               className="rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
             >
               <option value="classic">Harvard ATS Template</option>
-              <option value="modern">Modern Professional</option>
             </select>
             <Settings2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           </div>
 
-          <button 
-            onClick={handleDownload}
-            className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-colors active:scale-95"
-          >
-            <Printer className="h-4 w-4" />
-            Print / Save as PDF
-          </button>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button 
+              onClick={handlePrint}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 transition-colors"
+            >
+              <Printer className="h-4 w-4" />
+              Print
+            </button>
+            <button 
+              onClick={handleDirectDownload}
+              disabled={isDownloading}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-colors active:scale-95 disabled:opacity-70"
+            >
+              {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              Download PDF
+            </button>
+          </div>
         </div>
 
         {/* Document Preview Area */}

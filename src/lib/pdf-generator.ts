@@ -5,13 +5,10 @@ export type TemplateType = 'classic' | 'modern' | 'minimal';
 export type ContentType = 'cv' | 'cover-letter';
 
 interface PDFData {
-  name: string;
-  email: string;
-  phone?: string;
-  linkedin?: string;
-  content: string;
+  content: any; // Can be string for cover letter, or object for CV
   type: ContentType;
   template: TemplateType;
+  fallbackName?: string; // If header.name is missing
 }
 
 async function loadPdfMake() {
@@ -43,156 +40,138 @@ async function loadPdfMake() {
   return pdfMake;
 }
 
-function parseContentToLines(content: string): string[] {
-  return content.split('\n').filter((line) => line.trim() !== '');
-}
+function getClassicCVTemplate(data: any): any {
+  const { header, summary, experience, education, projects, skills } = data;
+  
+  const contentItems = [];
+  
+  // Header
+  if (header) {
+    contentItems.push({ text: header.name || 'Your Name', style: 'header', alignment: 'center' });
+    const contactParts = [header.email, header.phone, header.linkedin].filter(Boolean);
+    contentItems.push({
+      text: contactParts.join('  |  '),
+      alignment: 'center',
+      fontSize: 10,
+      color: '#333',
+      margin: [0, 4, 0, 15] as number[],
+    });
+  }
 
-function getContactParts(data: PDFData): string[] {
-  const parts = [data.email];
-  if (data.phone) parts.push(data.phone);
-  if (data.linkedin) parts.push(data.linkedin);
-  return parts;
-}
+  const addSectionTitle = (title: string) => {
+    contentItems.push({ text: title, style: 'sectionTitle' });
+    contentItems.push({
+      canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#000' }],
+      margin: [0, -6, 0, 8] as number[],
+    });
+  };
 
-function getClassicTemplate(data: PDFData): any {
-  // Classic: Traditional, single-column, serif-like feel
-  // Header with name centered, contact info below
-  // Content with clear section dividers (horizontal lines)
-  const lines = parseContentToLines(data.content);
-  const contentItems = lines.map((line) => {
-    if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-      return { text: line, margin: [10, 2, 0, 2] as number[], fontSize: 10 };
-    }
-    return { text: line, margin: [0, 4, 0, 4] as number[], fontSize: 10 };
-  });
+  // Summary
+  if (summary) {
+    addSectionTitle('PROFESSIONAL SUMMARY');
+    contentItems.push({ text: summary, margin: [0, 0, 0, 12] as number[] });
+  }
 
-  const contactParts = getContactParts(data);
+  // Experience
+  if (experience && experience.length > 0) {
+    addSectionTitle('PROFESSIONAL EXPERIENCE');
+    experience.forEach((exp: any) => {
+      contentItems.push({
+        columns: [
+          { text: [{ text: exp.title, bold: true }, ', ', { text: exp.company, italics: true }], width: '*' },
+          { text: exp.date, width: 'auto', alignment: 'right' }
+        ],
+        margin: [0, 0, 0, 4] as number[]
+      });
+      if (exp.description && exp.description.length > 0) {
+        contentItems.push({
+          ul: exp.description,
+          margin: [10, 0, 0, 10] as number[]
+        });
+      }
+    });
+  }
+
+  // Projects
+  if (projects && projects.length > 0) {
+    addSectionTitle('PROJECTS');
+    projects.forEach((proj: any) => {
+      contentItems.push({
+        text: [{ text: proj.name, bold: true }],
+        margin: [0, 0, 0, 2] as number[]
+      });
+      if (proj.description) {
+        contentItems.push({ text: proj.description, italics: true, fontSize: 9, margin: [0, 0, 0, 4] as number[] });
+      }
+      if (proj.details && proj.details.length > 0) {
+        contentItems.push({
+          ul: proj.details,
+          margin: [10, 0, 0, 10] as number[]
+        });
+      }
+    });
+  }
+
+  // Education
+  if (education && education.length > 0) {
+    addSectionTitle('EDUCATION');
+    education.forEach((edu: any) => {
+      contentItems.push({
+        columns: [
+          { text: [{ text: edu.degree, bold: true }, ', ', { text: edu.institution, italics: true }], width: '*' },
+          { text: edu.date, width: 'auto', alignment: 'right' }
+        ],
+        margin: [0, 0, 0, 6] as number[]
+      });
+    });
+  }
+
+  // Skills
+  if (skills && skills.length > 0) {
+    addSectionTitle('SKILLS');
+    contentItems.push({
+      text: skills.join(' • '),
+      margin: [0, 0, 0, 12] as number[]
+    });
+  }
 
   return {
-    content: [
-      { text: data.name, style: 'header', alignment: 'center' },
-      {
-        text: contactParts.join(' | '),
-        alignment: 'center',
-        fontSize: 9,
-        color: '#666',
-        margin: [0, 4, 0, 15] as number[],
-      },
-      {
-        canvas: [
-          { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#333' },
-        ],
-        margin: [0, 0, 0, 10] as number[],
-      },
-      {
-        text: data.type === 'cv' ? 'PROFESSIONAL EXPERIENCE' : 'COVER LETTER',
-        style: 'sectionTitle',
-      },
-      ...contentItems,
-    ],
+    content: contentItems,
     styles: {
       header: {
-        fontSize: 22,
+        fontSize: 24,
         bold: true,
-        color: '#1a1a1a',
+        color: '#000',
         margin: [0, 0, 0, 2] as number[],
       },
       sectionTitle: {
         fontSize: 12,
         bold: true,
-        color: '#333',
+        color: '#000',
         margin: [0, 10, 0, 8] as number[],
-        decoration: 'underline',
       },
     },
-    defaultStyle: { font: 'Roboto', fontSize: 10, lineHeight: 1.4 },
+    defaultStyle: { font: 'Roboto', fontSize: 10, lineHeight: 1.4, color: '#000' },
     pageMargins: [50, 50, 50, 50] as number[],
   };
 }
 
-function getModernTemplate(data: PDFData): any {
-  // Modern: Left color accent bar, two-tone header, contemporary feel
-  const lines = parseContentToLines(data.content);
-  const contentItems = lines.map((line) => {
-    if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-      return { text: line, margin: [10, 2, 0, 2] as number[], fontSize: 10 };
-    }
-    return { text: line, margin: [0, 4, 0, 4] as number[], fontSize: 10 };
-  });
-
-  const contactParts = getContactParts(data);
-
+function getCoverLetterTemplate(data: string, name?: string): any {
+  const lines = data.split('\n').filter(line => line.trim() !== '');
+  const contentItems = lines.map(line => ({ text: line, margin: [0, 0, 0, 10] as number[] }));
+  
   return {
     content: [
-      {
-        canvas: [{ type: 'rect', x: 0, y: 0, w: 515, h: 70, color: '#6C3CE1' }],
-        margin: [0, 0, 0, 0] as number[],
-        absolutePosition: { x: 50, y: 50 },
-      },
-      {
-        text: data.name,
-        fontSize: 24,
-        bold: true,
-        color: '#ffffff',
-        margin: [10, 10, 0, 2] as number[],
-      },
-      {
-        text: contactParts.join(' • '),
-        fontSize: 9,
-        color: '#e0d4ff',
-        margin: [10, 0, 0, 30] as number[],
-      },
-      {
-        text: data.type === 'cv' ? 'Professional Experience' : 'Cover Letter',
-        fontSize: 14,
-        bold: true,
-        color: '#6C3CE1',
-        margin: [0, 10, 0, 8] as number[],
-      },
-      {
-        canvas: [
-          { type: 'line', x1: 0, y1: 0, x2: 80, y2: 0, lineWidth: 3, lineColor: '#6C3CE1' },
-        ],
-        margin: [0, 0, 0, 10] as number[],
-      },
-      ...contentItems,
+      { text: name || 'Applicant', style: 'header' },
+      { text: 'COVER LETTER', style: 'sectionTitle', margin: [0, 10, 0, 20] as number[] },
+      ...contentItems
     ],
-    defaultStyle: { font: 'Roboto', fontSize: 10, lineHeight: 1.5 },
+    styles: {
+      header: { fontSize: 20, bold: true },
+      sectionTitle: { fontSize: 14, color: '#555', decoration: 'underline' }
+    },
+    defaultStyle: { font: 'Roboto', fontSize: 11, lineHeight: 1.5 },
     pageMargins: [50, 50, 50, 50] as number[],
-  };
-}
-
-function getMinimalTemplate(data: PDFData): any {
-  // Minimal: Maximum whitespace, subtle, elegant, just the essentials
-  const lines = parseContentToLines(data.content);
-  const contentItems = lines.map((line) => {
-    if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-      return { text: line, margin: [0, 3, 0, 3] as number[], fontSize: 10 };
-    }
-    return { text: line, margin: [0, 5, 0, 5] as number[], fontSize: 10 };
-  });
-
-  const contactParts = getContactParts(data);
-
-  return {
-    content: [
-      {
-        text: data.name,
-        fontSize: 28,
-        bold: true,
-        color: '#111',
-        margin: [0, 20, 0, 5] as number[],
-      },
-      {
-        text: contactParts.join('  ·  '),
-        fontSize: 9,
-        color: '#888',
-        margin: [0, 0, 0, 30] as number[],
-      },
-      ...contentItems,
-    ],
-    defaultStyle: { font: 'Roboto', fontSize: 10, lineHeight: 1.6, color: '#333' },
-    pageMargins: [60, 60, 60, 60] as number[],
   };
 }
 
@@ -200,23 +179,15 @@ export async function generatePDF(data: PDFData): Promise<void> {
   const pdfMake = await loadPdfMake();
 
   let docDefinition;
-  switch (data.template) {
-    case 'modern':
-      docDefinition = getModernTemplate(data);
-      break;
-    case 'minimal':
-      docDefinition = getMinimalTemplate(data);
-      break;
-    case 'classic':
-    default:
-      docDefinition = getClassicTemplate(data);
-      break;
+  
+  if (data.type === 'cv') {
+    docDefinition = getClassicCVTemplate(data.content);
+  } else {
+    docDefinition = getCoverLetterTemplate(typeof data.content === 'string' ? data.content : JSON.stringify(data.content), data.fallbackName);
   }
 
-  const fileName =
-    data.type === 'cv'
-      ? `${data.name.replace(/\s+/g, '_')}_Resume.pdf`
-      : `${data.name.replace(/\s+/g, '_')}_Cover_Letter.pdf`;
+  const name = data.type === 'cv' && data.content?.header?.name ? data.content.header.name : (data.fallbackName || 'Document');
+  const fileName = data.type === 'cv' ? `${name.replace(/\s+/g, '_')}_Resume.pdf` : `${name.replace(/\s+/g, '_')}_Cover_Letter.pdf`;
 
   pdfMake.createPdf(docDefinition).download(fileName);
 }
