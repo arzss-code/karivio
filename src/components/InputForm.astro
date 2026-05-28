@@ -1,5 +1,5 @@
 ---
-// InputForm – comprehensive input form for resume/cover letter generation
+// InputForm – comprehensive input form for resume/cover letter generation as a Step-by-Step Wizard
 ---
 
 <section id="input-form-section" class="animate-slide-up">
@@ -18,512 +18,423 @@
       </div>
     </div>
 
-    <!-- Card Container -->
-    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
+    <!-- Wizard Header / Progress Indicator -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between relative">
+        <div class="absolute left-0 top-1/2 -z-10 h-0.5 w-full -translate-y-1/2 bg-neutral-200"></div>
+        <div id="progress-bar" class="absolute left-0 top-1/2 -z-10 h-0.5 w-0 -translate-y-1/2 bg-primary-600 transition-all duration-300"></div>
+        
+        <!-- Steps -->
+        <div class="step-indicator active" data-step="1">1</div>
+        <div class="step-indicator" data-step="2">2</div>
+        <div class="step-indicator" data-step="3">3</div>
+        <div class="step-indicator" data-step="4">4</div>
+      </div>
+      <div class="flex justify-between text-xs font-medium text-text-muted mt-2">
+        <span class="text-primary-800">Personal</span>
+        <span>Education</span>
+        <span>Experience</span>
+        <span>Job Desc</span>
+      </div>
+    </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- Section 1: Personal Information                        -->
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <div class="border-b border-border p-6 sm:p-8">
-        <div class="mb-6 flex items-center gap-3">
-          <div class="h-5 w-1 rounded-full bg-neutral-900"></div>
-          <h2 class="text-base font-semibold text-neutral-900">Personal Information</h2>
+    <!-- Card Container -->
+    <div class="rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden min-h-[450px] flex flex-col transition-all duration-300">
+
+      <!-- Step 1: Personal Info -->
+      <div class="wizard-step p-6 sm:p-8 flex-1" data-step="1">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-neutral-900">Personal Information</h2>
+          <p class="text-sm text-text-muted mt-1">Let's start with your contact details.</p>
         </div>
 
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <!-- Full Name -->
           <div class="group">
             <label for="input-fullname" class="mb-1.5 block text-sm font-medium text-text-muted">
               Full Name <span class="text-error">*</span>
             </label>
-            <input
-              type="text"
-              id="input-fullname"
-              name="fullname"
-              required
-              autocomplete="name"
-              placeholder="e.g. Jane Smith"
-              class="form-input"
-            />
+            <input type="text" id="input-fullname" name="fullname" required autocomplete="name" placeholder="e.g. Jane Smith" class="form-input" />
           </div>
-
-          <!-- Email -->
           <div class="group">
             <label for="input-email" class="mb-1.5 block text-sm font-medium text-text-muted">
               Email <span class="text-error">*</span>
             </label>
-            <input
-              type="email"
-              id="input-email"
-              name="email"
-              required
-              autocomplete="email"
-              placeholder="jane@example.com"
-              class="form-input"
-            />
+            <input type="email" id="input-email" name="email" required autocomplete="email" placeholder="jane@example.com" class="form-input" />
           </div>
-
-          <!-- Phone -->
           <div class="group">
             <label for="input-phone" class="mb-1.5 block text-sm font-medium text-text-muted">
               Phone <span class="text-text-faint text-xs">(optional)</span>
             </label>
-            <input
-              type="tel"
-              id="input-phone"
-              name="phone"
-              autocomplete="tel"
-              placeholder="+62 812 3456 7890"
-              class="form-input"
-            />
+            <input type="tel" id="input-phone" name="phone" autocomplete="tel" placeholder="+62 812 3456 7890" class="form-input" />
           </div>
-
-          <!-- LinkedIn -->
           <div class="group">
             <label for="input-linkedin" class="mb-1.5 block text-sm font-medium text-text-muted">
               LinkedIn <span class="text-text-faint text-xs">(optional)</span>
             </label>
-            <input
-              type="url"
-              id="input-linkedin"
-              name="linkedin"
-              autocomplete="url"
-              placeholder="https://linkedin.com/in/janesmith"
-              class="form-input"
-            />
+            <input type="url" id="input-linkedin" name="linkedin" autocomplete="url" placeholder="https://linkedin.com/in/janesmith" class="form-input" />
           </div>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- Section 2: Experience & Skills                          -->
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <div class="border-b border-border p-6 sm:p-8">
-        <div class="mb-6 flex items-center gap-3">
-          <div class="h-5 w-1 rounded-full bg-neutral-900"></div>
-          <h2 class="text-base font-semibold text-neutral-900">Experience & Skills</h2>
+      <!-- Step 2: Education & Projects -->
+      <div class="wizard-step hidden p-6 sm:p-8 flex-1" data-step="2">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-neutral-900">Education & Projects</h2>
+          <p class="text-sm text-text-muted mt-1">Add your academic background and any relevant projects.</p>
         </div>
 
-        <div class="group">
+        <div class="grid grid-cols-1 gap-6">
+          <div class="group">
+            <label for="input-education" class="mb-1.5 block text-sm font-medium text-text-muted">
+              Education Background <span class="text-text-faint text-xs">(optional)</span>
+            </label>
+            <textarea id="input-education" name="education" rows="4" placeholder="e.g. B.S. Computer Science, University of Technology (2018 - 2022)" class="form-input resize-y"></textarea>
+          </div>
+          <div class="group">
+            <label for="input-projects" class="mb-1.5 block text-sm font-medium text-text-muted">
+              Key Projects <span class="text-text-faint text-xs">(optional)</span>
+            </label>
+            <textarea id="input-projects" name="projects" rows="4" placeholder="e.g. Built an E-commerce site using React and Node.js. Integrated Stripe payment." class="form-input resize-y"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Experience -->
+      <div class="wizard-step hidden p-6 sm:p-8 flex-1" data-step="3">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-neutral-900">Professional Experience</h2>
+          <p class="text-sm text-text-muted mt-1">Paste your work history. Our AI will structure it perfectly.</p>
+        </div>
+
+        <div class="group h-full flex flex-col">
           <div class="flex justify-between items-center mb-1.5">
             <label for="input-experience" class="text-sm font-medium text-text-muted">
               Your Experience <span class="text-error">*</span>
             </label>
-            <span
-              id="experience-counter"
-              class="text-xs text-text-faint transition-colors"
-            >
-              0 / 5,000
-            </span>
+            <span id="experience-counter" class="text-xs text-text-faint">0 / 5,000</span>
           </div>
-          <textarea
-            id="input-experience"
-            name="experience"
-            required
-            rows="8"
-            maxlength="5000"
-            placeholder="Paste your work experience, skills, achievements here...&#10;&#10;Example:&#10;- Managed a team of 5 developers&#10;- Built a React web app that increased sales by 30%&#10;- Led migration from legacy PHP to Node.js&#10;- 3 years experience with Python, AWS, Docker"
-            class="form-input min-h-[180px] resize-y"
-          ></textarea>
+          <textarea id="input-experience" name="experience" required rows="8" maxlength="5000" placeholder="e.g. Software Engineer at Tech Corp (2020-2023). Managed a team of 5..." class="form-input flex-1 resize-y"></textarea>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- Section 3: Target Job Description                       -->
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <div class="border-b border-border p-6 sm:p-8">
-        <div class="mb-6 flex items-center gap-3">
-          <div class="h-5 w-1 rounded-full bg-neutral-900"></div>
-          <h2 class="text-base font-semibold text-neutral-900">Target Job Description</h2>
+      <!-- Step 4: Job Description & Generate -->
+      <div class="wizard-step hidden p-6 sm:p-8 flex-1" data-step="4">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-neutral-900">Target Job</h2>
+          <p class="text-sm text-text-muted mt-1">Paste the job description so we can tailor your CV.</p>
         </div>
 
-        <div class="group">
+        <div class="group mb-6">
           <div class="flex justify-between items-center mb-1.5">
             <label for="input-jobdesc" class="text-sm font-medium text-text-muted">
               Job Description <span class="text-error">*</span>
             </label>
-            <span
-              id="jobdesc-counter"
-              class="text-xs text-text-faint transition-colors"
-            >
-              0 / 5,000
-            </span>
+            <span id="jobdesc-counter" class="text-xs text-text-faint">0 / 5,000</span>
           </div>
-          <textarea
-            id="input-jobdesc"
-            name="jobDescription"
-            required
-            rows="8"
-            maxlength="5000"
-            placeholder="Paste the job description you're applying for...&#10;&#10;Include the role title, responsibilities, requirements, and any specific skills mentioned."
-            class="form-input min-h-[180px] resize-y"
-          ></textarea>
+          <textarea id="input-jobdesc" name="jobDescription" required rows="6" maxlength="5000" placeholder="Paste the job description you're applying for..." class="form-input resize-y"></textarea>
+        </div>
+
+        <div class="group mb-8">
+          <label for="input-language" class="mb-1.5 block text-sm font-medium text-text-muted">Output Language</label>
+          <select id="input-language" name="language" class="form-input sm:w-1/2 cursor-pointer">
+            <option value="auto">Auto-detect language</option>
+            <option value="en">English (EN)</option>
+            <option value="id">Bahasa Indonesia (ID)</option>
+          </select>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- Section 4: Options & Actions                            -->
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <div class="p-6 sm:p-8">
-        <!-- Options Row -->
-        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div class="group w-full sm:w-auto">
-            <label for="input-language" class="mb-1.5 block text-sm font-medium text-text-muted">
-              Output Language
-            </label>
-            <div class="relative">
-              <select
-                id="input-language"
-                name="language"
-                class="form-input appearance-none pr-10 sm:w-56 cursor-pointer"
-              >
-                <option value="auto">Auto-detect language</option>
-                <option value="en">English (EN)</option>
-                <option value="id">Bahasa Indonesia (ID)</option>
-              </select>
-              <svg
-                class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </div>
+      <!-- Footer Buttons -->
+      <div class="border-t border-border p-4 sm:px-8 bg-neutral-50/50 flex justify-between items-center mt-auto">
+        <button type="button" id="btn-prev" class="btn-secondary hidden">
+          Back
+        </button>
+        <div class="ml-auto flex gap-3">
+          <button type="button" id="btn-next" class="btn-primary">
+            Next Step
+          </button>
+          
+          <div id="action-buttons" class="hidden flex gap-3">
+            <button type="button" id="generate-cl-btn" class="btn-secondary group">
+              <span class="btn-content">Cover Letter</span>
+              <span class="btn-loading hidden">...</span>
+            </button>
+            <button type="button" id="generate-cv-btn" class="btn-primary group">
+              <span class="btn-content">Generate CV</span>
+              <span class="btn-loading hidden">...</span>
+            </button>
           </div>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            id="generate-cv-btn"
-            class="btn-primary group flex-1"
-          >
-            <span class="btn-content">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.096-.813L9 9l.813 5.187L15 15l-5.187.813zM19.071 4.929l-.707 2.122-2.122.707 2.122.707.707 2.122.707-2.122 2.122-.707-2.122-.707-.707-2.122z" />
-              </svg>
-              <span>Generate CV Bullet Points</span>
-            </span>
-            <span class="btn-loading hidden">
-              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
-              <span>Generating...</span>
-            </span>
-          </button>
-
-          <button
-            type="button"
-            id="generate-cl-btn"
-            class="btn-secondary group flex-1"
-          >
-            <span class="btn-content">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              <span>Generate Cover Letter</span>
-            </span>
-            <span class="btn-loading hidden">
-              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
-              <span>Generating...</span>
-            </span>
-          </button>
-        </div>
       </div>
+
     </div>
   </form>
 </section>
 
 <style>
-  /* ── Form Input Base ──────────────────────────────────────── */
+  .step-indicator {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+  }
+
+  .step-indicator.active {
+    border-color: var(--color-primary-900);
+    background-color: var(--color-primary-900);
+    color: white;
+    box-shadow: 0 0 0 4px var(--color-primary-50);
+    transform: scale(1.1);
+  }
+
+  .step-indicator.completed {
+    border-color: var(--color-primary-900);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-900);
+  }
+
+  #progress-bar {
+    background-image: linear-gradient(to right, var(--color-primary-300), var(--color-primary-900));
+  }
+
+  /* Form Input Base */
   .form-input {
     width: 100%;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     border: 1px solid var(--color-border);
     background-color: var(--color-surface);
-    padding: 0.625rem 0.875rem;
+    padding: 0.75rem 1rem;
     font-size: 0.875rem;
     line-height: 1.5;
     color: var(--color-text);
-    transition: all 0.15s ease-in-out;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     outline: none;
+    box-shadow: inset 0 2px 4px 0 oklch(0 0 0 / 0.01);
   }
-
-  .form-input::placeholder {
-    color: var(--color-text-muted);
-    opacity: 0.6;
-  }
-
-  .form-input:hover {
-    border-color: var(--color-primary-300);
-  }
-
+  .form-input::placeholder { color: var(--color-text-muted); opacity: 0.6; }
+  .form-input:hover { border-color: var(--color-primary-300); background-color: var(--color-primary-50); }
   .form-input:focus {
     border-color: var(--color-primary-600);
-    box-shadow: 0 0 0 2px oklch(0.12 0.01 240 / 0.06);
+    background-color: var(--color-surface);
+    box-shadow: 0 0 0 4px oklch(0.12 0.01 240 / 0.08);
   }
-
   .form-input.input-error {
     border-color: var(--color-error);
-    box-shadow: 0 0 0 2px oklch(0.52 0.16 25 / 0.06);
+    box-shadow: 0 0 0 4px oklch(0.52 0.16 25 / 0.1);
   }
 
-  textarea.form-input {
-    font-family: inherit;
-  }
-
-  /* ── Primary Button ───────────────────────────────────────── */
-  .btn-primary {
+  /* Buttons */
+  .btn-primary, .btn-secondary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.5rem;
-    background: var(--color-primary-900);
-    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--color-primary-900);
     color: white;
     border: 1px solid var(--color-primary-950);
-    cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 4px 12px 0 oklch(0 0 0 / 0.15);
   }
-
-  .btn-primary:hover:not(:disabled) {
-    background: var(--color-primary-800);
+  .btn-primary:hover:not(:disabled) { 
+    background: var(--color-primary-800); 
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px 0 oklch(0 0 0 / 0.2);
   }
-
-  .btn-primary:active:not(:disabled) {
-    background: var(--color-primary-950);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  /* ── Secondary Button ─────────────────────────────────────── */
   .btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
     background: var(--color-surface);
-    padding: 0.75rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
     color: var(--color-text);
     border: 1px solid var(--color-border);
-    cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 2px 4px 0 oklch(0 0 0 / 0.02);
   }
-
-  .btn-secondary:hover:not(:disabled) {
-    background: var(--color-primary-50);
-    border-color: var(--color-primary-300);
+  .btn-secondary:hover:not(:disabled) { 
+    background: var(--color-primary-50); 
+    border-color: var(--color-primary-300); 
+    transform: translateY(-1px);
   }
-
-  .btn-secondary:active:not(:disabled) {
-    background: var(--color-primary-100);
-  }
-
-  .btn-secondary:disabled {
+  
+  .btn-primary:disabled, .btn-secondary:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-
-  /* ── Button Content & Loading ─────────────────────────────── */
-  .btn-content:not(.hidden),
-  .btn-loading:not(.hidden) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .btn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    transform: none;
+    box-shadow: none;
   }
 </style>
 
 <script>
-  function initForm() {
-    // ── DOM refs ──
-    const form = document.getElementById('career-form') as HTMLFormElement | null;
-    const cvBtn = document.getElementById('generate-cv-btn') as HTMLButtonElement | null;
-    const clBtn = document.getElementById('generate-cl-btn') as HTMLButtonElement | null;
-    const errorAlert = document.getElementById('form-error-alert') as HTMLElement | null;
-    const errorText = document.getElementById('form-error-text') as HTMLElement | null;
-
-    // Inputs
-    const nameInput = document.getElementById('input-fullname') as HTMLInputElement | null;
-    const emailInput = document.getElementById('input-email') as HTMLInputElement | null;
-    const experienceInput = document.getElementById('input-experience') as HTMLTextAreaElement | null;
-    const jobDescInput = document.getElementById('input-jobdesc') as HTMLTextAreaElement | null;
-    const languageSelect = document.getElementById('input-language') as HTMLSelectElement | null;
-
-    // Counters
-    const expCounter = document.getElementById('experience-counter');
-    const jobCounter = document.getElementById('jobdesc-counter');
-
-    if (!form || !cvBtn || !clBtn) return;
-
-    if (form.dataset.initialized === 'true') {
-      console.log('[InputForm] Already initialized, skipping');
-      return;
-    }
+  function initWizard() {
+    const form = document.getElementById('career-form') as HTMLFormElement;
+    if (!form) return;
+    if (form.dataset.initialized === 'true') return;
     form.dataset.initialized = 'true';
-    console.log('[InputForm] Initializing form handlers...');
 
-    // ── Character counters ──
-    function updateCounter(textarea: HTMLTextAreaElement | null, counter: HTMLElement | null) {
-      if (!textarea || !counter) return;
-      const len = textarea.value.length;
-      const max = 5000;
-      counter.textContent = `${len.toLocaleString()} / ${max.toLocaleString()}`;
-      if (len > max * 0.9) {
-        counter.classList.add('text-warning');
-        counter.classList.remove('text-text-faint', 'text-error');
-      } else if (len >= max) {
-        counter.classList.add('text-error');
-        counter.classList.remove('text-text-faint', 'text-warning');
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    const steps = document.querySelectorAll('.wizard-step');
+    const indicators = document.querySelectorAll('.step-indicator');
+    const progressBar = document.getElementById('progress-bar');
+    const btnNext = document.getElementById('btn-next');
+    const btnPrev = document.getElementById('btn-prev');
+    const actionBtns = document.getElementById('action-buttons');
+    
+    // Inputs
+    const nameInput = document.getElementById('input-fullname') as HTMLInputElement;
+    const emailInput = document.getElementById('input-email') as HTMLInputElement;
+    const phoneInput = document.getElementById('input-phone') as HTMLInputElement;
+    const linkedinInput = document.getElementById('input-linkedin') as HTMLInputElement;
+    
+    const educationInput = document.getElementById('input-education') as HTMLTextAreaElement;
+    const projectsInput = document.getElementById('input-projects') as HTMLTextAreaElement;
+    
+    const experienceInput = document.getElementById('input-experience') as HTMLTextAreaElement;
+    const jobDescInput = document.getElementById('input-jobdesc') as HTMLTextAreaElement;
+    const languageSelect = document.getElementById('input-language') as HTMLSelectElement;
+
+    // Error handling
+    const errorAlert = document.getElementById('form-error-alert');
+    const errorText = document.getElementById('form-error-text');
+
+    function updateWizard() {
+      // Show/Hide steps
+      steps.forEach(step => {
+        if (parseInt((step as HTMLElement).dataset.step || '1') === currentStep) {
+          step.classList.remove('hidden');
+        } else {
+          step.classList.add('hidden');
+        }
+      });
+
+      // Update indicators
+      indicators.forEach(ind => {
+        const stepNum = parseInt((ind as HTMLElement).dataset.step || '1');
+        ind.classList.remove('active', 'completed');
+        if (stepNum === currentStep) ind.classList.add('active');
+        if (stepNum < currentStep) ind.classList.add('completed');
+      });
+
+      // Update Progress line
+      if (progressBar) {
+        progressBar.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
+      }
+
+      // Buttons
+      if (currentStep === 1) {
+        btnPrev?.classList.add('hidden');
       } else {
-        counter.classList.add('text-text-faint');
-        counter.classList.remove('text-warning', 'text-error');
+        btnPrev?.classList.remove('hidden');
+      }
+
+      if (currentStep === totalSteps) {
+        btnNext?.classList.add('hidden');
+        actionBtns?.classList.remove('hidden');
+      } else {
+        btnNext?.classList.remove('hidden');
+        actionBtns?.classList.add('hidden');
       }
     }
 
-    experienceInput?.addEventListener('input', () => updateCounter(experienceInput, expCounter));
-    jobDescInput?.addEventListener('input', () => updateCounter(jobDescInput, jobCounter));
-
-    // ── Show/hide error ──
-    function showError(message: string) {
-      if (!errorAlert || !errorText) return;
-      errorText.textContent = message;
-      errorAlert.classList.remove('hidden');
-      errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      // Auto-dismiss after 8s
-      setTimeout(() => hideError(), 8000);
+    function showError(msg: string) {
+      if (errorAlert && errorText) {
+        errorText.textContent = msg;
+        errorAlert.classList.remove('hidden');
+      }
     }
 
-    function hideError() {
+    function validateStep(step: number): boolean {
       errorAlert?.classList.add('hidden');
-    }
-
-    // ── Clear error styling on input ──
-    [nameInput, emailInput, experienceInput, jobDescInput].forEach((el) => {
-      el?.addEventListener('input', () => {
-        el.classList.remove('input-error');
-        hideError();
-      });
-    });
-
-    // ── Validate form ──
-    function validateForm(): boolean {
       let isValid = true;
-      const fields: { el: HTMLInputElement | HTMLTextAreaElement | null; name: string }[] = [
-        { el: nameInput, name: 'Full Name' },
-        { el: emailInput, name: 'Email' },
-        { el: experienceInput, name: 'Experience' },
-        { el: jobDescInput, name: 'Job Description' },
-      ];
-
-      // Clear previous errors
-      fields.forEach(({ el }) => el?.classList.remove('input-error'));
-
-      for (const { el, name } of fields) {
-        if (!el || !el.value.trim()) {
-          el?.classList.add('input-error');
-          el?.focus();
+      
+      const checkField = (el: HTMLInputElement | HTMLTextAreaElement, name: string) => {
+        if (!el.value.trim()) {
+          el.classList.add('input-error');
           showError(`${name} is required.`);
           isValid = false;
-          break;
+        } else {
+          el.classList.remove('input-error');
         }
-      }
+      };
 
-      // Validate email format
-      if (isValid && emailInput) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailInput.value.trim())) {
-          emailInput.classList.add('input-error');
-          emailInput.focus();
-          showError('Please enter a valid email address.');
-          isValid = false;
+      if (step === 1) {
+        checkField(nameInput, 'Full Name');
+        checkField(emailInput, 'Email');
+        if (isValid && emailInput.value) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(emailInput.value.trim())) {
+            emailInput.classList.add('input-error');
+            showError('Please enter a valid email.');
+            isValid = false;
+          }
         }
+      } else if (step === 3) {
+        checkField(experienceInput, 'Experience');
+      } else if (step === 4) {
+        checkField(jobDescInput, 'Job Description');
       }
 
       return isValid;
     }
 
-    // ── Set button loading state ──
-    function setButtonLoading(button: HTMLButtonElement, loading: boolean) {
-      const content = button.querySelector('.btn-content') as HTMLElement;
-      const loadingEl = button.querySelector('.btn-loading') as HTMLElement;
-      if (!content || !loadingEl) return;
-
-      if (loading) {
-        content.classList.add('hidden');
-        loadingEl.classList.remove('hidden');
-        button.disabled = true;
-      } else {
-        content.classList.remove('hidden');
-        loadingEl.classList.add('hidden');
-        button.disabled = false;
+    btnNext?.addEventListener('click', () => {
+      if (validateStep(currentStep)) {
+        currentStep++;
+        updateWizard();
       }
-    }
+    });
 
-    // ── Handle generation ──
+    btnPrev?.addEventListener('click', () => {
+      currentStep--;
+      updateWizard();
+      errorAlert?.classList.add('hidden');
+    });
+
+    // Submitting
     async function handleGenerate(type: 'cv' | 'cover-letter') {
-      console.log('[InputForm] handleGenerate called for:', type);
-      hideError();
+      if (!validateStep(currentStep)) return;
 
-      if (!validateForm()) {
-        console.log('[InputForm] Form validation failed');
-        return;
-      }
+      const cvBtn = document.getElementById('generate-cv-btn') as HTMLButtonElement;
+      const clBtn = document.getElementById('generate-cl-btn') as HTMLButtonElement;
+      const activeBtn = type === 'cv' ? cvBtn : clBtn;
+      
+      activeBtn.disabled = true;
+      activeBtn.querySelector('.btn-content')?.classList.add('hidden');
+      activeBtn.querySelector('.btn-loading')?.classList.remove('hidden');
 
-      console.log('[InputForm] Form validation passed');
-      const activeBtn = type === 'cv' ? cvBtn! : clBtn!;
-      const otherBtn = type === 'cv' ? clBtn! : cvBtn!;
-
-      // Set loading states
-      setButtonLoading(activeBtn, true);
-      otherBtn.disabled = true;
-
-      // Dispatch loading event so ResultPreview shows skeleton
-      console.log('[InputForm] Dispatching generation-start event for:', type);
-      window.dispatchEvent(
-        new CustomEvent('generation-start', { detail: { type } })
-      );
+      window.dispatchEvent(new CustomEvent('generation-start', { detail: { type } }));
 
       try {
-        const endpoint =
-          type === 'cv' ? '/api/generate-cv' : '/api/generate-cover-letter';
+        const endpoint = type === 'cv' ? '/api/generate-cv' : '/api/generate-cover-letter';
+        
+        let personalInfo = `${nameInput.value.trim()}\n${emailInput.value.trim()}`;
+        if (phoneInput.value.trim()) personalInfo += `\n${phoneInput.value.trim()}`;
+        if (linkedinInput.value.trim()) personalInfo += `\n${linkedinInput.value.trim()}`;
 
-        const body: Record<string, string> = {
-          experience: experienceInput!.value.trim(),
-          jobDescription: jobDescInput!.value.trim(),
-          language: languageSelect?.value || 'auto',
+        const body: any = {
+          personalInfo,
+          experience: experienceInput.value.trim(),
+          education: educationInput.value.trim(),
+          projects: projectsInput.value.trim(),
+          jobDescription: jobDescInput.value.trim(),
+          language: languageSelect.value,
         };
 
-        // Cover letter also sends name/email
         if (type === 'cover-letter') {
-          body.name = nameInput!.value.trim();
-          body.email = emailInput!.value.trim();
+          body.name = nameInput.value.trim();
+          body.email = emailInput.value.trim();
         }
 
         const response = await fetch(endpoint, {
@@ -533,56 +444,25 @@
         });
 
         const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Server error');
 
-        if (!response.ok) {
-          throw new Error(data.error || `Server error (${response.status})`);
-        }
-
-        // Dispatch success event
-        console.log('[InputForm] Generation successful, dispatching result-ready:', type);
-        window.dispatchEvent(
-          new CustomEvent('result-ready', {
-            detail: {
-              type,
-              result: data.result,
-            },
-          })
-        );
+        window.dispatchEvent(new CustomEvent('result-ready', { detail: { type, result: data.result } }));
       } catch (err: any) {
-        console.error('[InputForm] Generation failed:', err);
-        showError(err.message || 'Something went wrong. Please try again.');
-        // Dispatch error event
-        window.dispatchEvent(
-          new CustomEvent('generation-error', {
-            detail: { type, error: err.message },
-          })
-        );
+        showError(err.message || 'Generation failed');
+        window.dispatchEvent(new CustomEvent('generation-error', { detail: { type, error: err.message } }));
       } finally {
-        setButtonLoading(activeBtn, false);
-        otherBtn.disabled = false;
+        activeBtn.disabled = false;
+        activeBtn.querySelector('.btn-content')?.classList.remove('hidden');
+        activeBtn.querySelector('.btn-loading')?.classList.add('hidden');
       }
     }
 
-    // ── Form submit handler ──
-    form.addEventListener('submit', (e) => {
-      console.log('[InputForm] Form submit prevented');
-      e.preventDefault();
-    });
+    document.getElementById('generate-cv-btn')?.addEventListener('click', () => handleGenerate('cv'));
+    document.getElementById('generate-cl-btn')?.addEventListener('click', () => handleGenerate('cover-letter'));
 
-    // ── Button click handlers ──
-    cvBtn.addEventListener('click', () => {
-      console.log('[InputForm] CV button clicked');
-      handleGenerate('cv');
-    });
-    clBtn.addEventListener('click', () => {
-      console.log('[InputForm] Cover Letter button clicked');
-      handleGenerate('cover-letter');
-    });
+    updateWizard();
   }
 
-  // Initialize immediately
-  initForm();
-
-  // Re-run on client-side router navigation
-  document.addEventListener('astro:page-load', initForm);
+  initWizard();
+  document.addEventListener('astro:page-load', initWizard);
 </script>

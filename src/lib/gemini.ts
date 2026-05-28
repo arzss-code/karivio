@@ -16,7 +16,8 @@ function getClient(): GoogleGenAI {
 export async function generateContent(
   prompt: string,
   systemInstruction: string,
-  retries = 3
+  retries = 3,
+  jsonMode = false
 ): Promise<string> {
   const client = getClient();
   let lastError;
@@ -30,6 +31,7 @@ export async function generateContent(
           systemInstruction,
           temperature: 0.7,
           maxOutputTokens: 4096,
+          ...(jsonMode ? { responseMimeType: 'application/json' } : {})
         },
       });
 

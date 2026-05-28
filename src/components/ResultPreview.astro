@@ -1,11 +1,11 @@
 ---
-// ResultPreview – AI result display with tabs, editing, copy & PDF download
+// ResultPreview – AI result display for Full CV JSON & Cover Letter
 ---
 
 <section id="result-section" class="lg:sticky lg:top-24">
-  <!-- Empty State (shown initially) -->
+  <!-- Empty State -->
   <div id="result-empty" class="animate-fade-in">
-    <div class="rounded-xl border border-border bg-surface p-8 sm:p-12 text-center shadow-sm">
+    <div class="rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-sm p-8 sm:p-12 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-neutral-100 text-neutral-400 border border-neutral-200/50">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -18,10 +18,9 @@
     </div>
   </div>
 
-  <!-- Loading State (shown during generation) -->
+  <!-- Loading State -->
   <div id="result-loading" class="hidden animate-scale-in">
-    <div class="rounded-xl border border-border bg-surface p-6 sm:p-8 shadow-sm">
-      <!-- Loading header -->
+    <div class="rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-sm p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       <div class="mb-6 flex items-center gap-3">
         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-100 text-neutral-600 border border-neutral-200/50">
           <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -34,57 +33,29 @@
           <p class="text-xs text-text-muted">This usually takes 5-15 seconds</p>
         </div>
       </div>
-      <!-- Skeleton bars (Grayscale Shimmer) -->
       <div class="space-y-3">
         <div class="h-3.5 w-full rounded bg-neutral-100 animate-shimmer" style="background-size:200% 100%;"></div>
         <div class="h-3.5 w-[92%] rounded bg-neutral-50 animate-shimmer" style="background-size:200% 100%;animation-delay:0.1s"></div>
         <div class="h-3.5 w-[97%] rounded bg-neutral-100 animate-shimmer" style="background-size:200% 100%;animation-delay:0.2s"></div>
         <div class="h-3.5 w-[85%] rounded bg-neutral-50 animate-shimmer" style="background-size:200% 100%;animation-delay:0.3s"></div>
-        <div class="h-3.5 w-[90%] rounded bg-neutral-100 animate-shimmer" style="background-size:200% 100%;animation-delay:0.4s"></div>
-        <div class="h-3.5 w-[60%] rounded bg-neutral-50 animate-shimmer" style="background-size:200% 100%;animation-delay:0.5s"></div>
       </div>
     </div>
   </div>
 
-  <!-- Result Content (shown when result is ready) -->
+  <!-- Result Content -->
   <div id="result-content" class="hidden animate-scale-in">
-    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden flex flex-col lg:max-h-[calc(100vh-7rem)]">
-
-      <!-- Tab Bar (Modern Pill Design) -->
-      <div class="flex border-b border-border bg-neutral-50 p-1.5 gap-1.5">
-        <button
-          id="tab-cv"
-          type="button"
-          class="result-tab active flex-1 py-2 px-3 text-xs sm:text-sm font-medium transition-all duration-150 rounded-md"
-          data-tab="cv"
-        >
-          <span class="inline-flex items-center justify-center gap-2 w-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            CV Bullet Points
-          </span>
-        </button>
-        <button
-          id="tab-cover-letter"
-          type="button"
-          class="result-tab flex-1 py-2 px-3 text-xs sm:text-sm font-medium transition-all duration-150 rounded-md"
-          data-tab="cover-letter"
-        >
-          <span class="inline-flex items-center justify-center gap-2 w-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Cover Letter
-          </span>
-        </button>
+    <div class="rounded-2xl border border-neutral-200/80 bg-white/95 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col lg:max-h-[calc(100vh-5rem)]">
+      
+      <!-- Tab Bar -->
+      <div class="flex border-b border-border bg-neutral-50 p-1.5 gap-1.5 hidden" id="tabs-container">
+        <button id="tab-cv" type="button" class="result-tab flex-1 py-2 px-3 text-xs sm:text-sm font-medium transition-all duration-150 rounded-md" data-tab="cv">Full CV</button>
+        <button id="tab-cover-letter" type="button" class="result-tab flex-1 py-2 px-3 text-xs sm:text-sm font-medium transition-all duration-150 rounded-md" data-tab="cover-letter">Cover Letter</button>
       </div>
 
       <!-- Toolbar -->
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 bg-neutral-50/20">
-        <!-- Template Selector -->
         <div class="relative">
-          <select id="template-selector" class="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-muted appearance-none pr-7 cursor-pointer hover:border-neutral-300 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-200">
+          <select id="template-selector" class="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-muted appearance-none pr-7 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-neutral-200 transition-all">
             <option value="classic">Classic Template</option>
             <option value="modern">Modern Template</option>
             <option value="minimal">Minimal Template</option>
@@ -94,31 +65,8 @@
           </svg>
         </div>
 
-        <!-- Toolbar Actions Group -->
         <div class="flex items-center gap-2">
-          <!-- Copy Button -->
-          <button
-            id="copy-btn"
-            type="button"
-            class="toolbar-btn"
-            title="Copy to clipboard"
-          >
-            <svg id="copy-icon" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
-            </svg>
-            <svg id="copy-check-icon" class="hidden h-4 w-4 shrink-0 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-            <span id="copy-text">Copy</span>
-          </button>
-
-          <!-- Download PDF Button -->
-          <button
-            id="download-pdf-btn"
-            type="button"
-            class="toolbar-btn toolbar-btn-primary"
-            title="Download as PDF"
-          >
+          <button id="download-pdf-btn" type="button" class="toolbar-btn toolbar-btn-primary" title="Download as PDF">
             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
@@ -127,327 +75,328 @@
         </div>
       </div>
 
-      <!-- Editable Content Area (Internal Scrollable) -->
-      <div class="p-6 sm:p-8 flex-1 overflow-y-auto min-h-[300px]">
-        <div
-          id="result-editor"
-          contenteditable="true"
-          class="result-editor focus:outline-none"
-          spellcheck="true"
-        >
-          <p class="text-text-muted italic">Your generated content will appear here...</p>
+      <!-- Content Area -->
+      <div class="p-6 sm:p-8 flex-1 overflow-y-auto bg-neutral-100/50">
+        <!-- Rendered CV Container -->
+        <div id="cv-render-container" class="bg-white shadow-sm border border-border mx-auto print-area" style="max-width: 210mm; min-height: 297mm; padding: 2rem;">
+          <!-- Content injected here via JS -->
         </div>
       </div>
-
-      <!-- Footer Hint -->
-      <div class="border-t border-border px-4 py-2.5 bg-neutral-50/20">
-        <p class="text-xs text-text-muted text-center">
-          💡 You can edit the text above before downloading. Click on the text to start editing.
-        </p>
-      </div>
+      
     </div>
   </div>
 </section>
 
 <style>
-  /* ── Tab Styles (Modern Pill Style, No Underlines) ────── */
   .result-tab {
-    color: var(--color-text-muted);
-    cursor: pointer;
-    background: none;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--color-text-muted); cursor: pointer; background: none; border: none;
+    display: inline-flex; align-items: center; justify-content: center;
   }
-
-  .result-tab:hover {
-    color: var(--color-primary-900);
-  }
-
+  .result-tab:hover { color: var(--color-primary-900); }
   .result-tab.active {
-    color: var(--color-primary-950);
-    background: var(--color-surface);
-    font-weight: 500;
-    box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
+    color: var(--color-primary-950); background: var(--color-surface);
+    font-weight: 500; box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
   }
 
-  /* ── Toolbar Buttons ─────────────────────────────────── */
   .toolbar-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    border-radius: 0.375rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface);
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    transition: all 0.15s ease;
+    display: inline-flex; align-items: center; gap: 0.375rem; border-radius: 0.375rem;
+    border: 1px solid var(--color-border); background: var(--color-surface);
+    padding: 0.375rem 0.75rem; font-size: 0.75rem; font-weight: 500; color: var(--color-text-muted);
+    cursor: pointer; transition: all 0.15s ease;
   }
+  .toolbar-btn:hover { border-color: var(--color-primary-400); color: var(--color-primary-900); background: var(--color-primary-50); }
+  .toolbar-btn-primary { background: var(--color-primary-900); border-color: var(--color-primary-950); color: white; }
+  .toolbar-btn-primary:hover { background: var(--color-primary-800); color: white; }
 
-  .toolbar-btn:hover {
-    border-color: var(--color-primary-400);
-    color: var(--color-primary-900);
-    background: var(--color-primary-50);
-  }
-
-  .toolbar-btn-primary {
-    background: var(--color-primary-900);
-    border-color: var(--color-primary-950);
-    color: white;
-  }
-
-  .toolbar-btn-primary:hover {
-    background: var(--color-primary-800);
-    color: white;
-  }
-
-  /* ── Editor Styles ───────────────────────────────────── */
-  .result-editor {
+  /* CV Template Base Styles */
+  #cv-render-container {
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--color-text);
-    white-space: pre-wrap;
-    word-break: break-word;
+    color: #111;
+    line-height: 1.5;
   }
+  
+  /* Classic Template (ATS Optimized / Harvard Style) */
+  #cv-render-container.template-classic {
+    font-family: 'Times New Roman', Times, serif;
+    color: #000;
+  }
+  #cv-render-container.template-classic h1 { font-size: 24pt; font-weight: bold; text-align: center; margin-bottom: 0.1rem; }
+  #cv-render-container.template-classic .contact-info { text-align: center; font-size: 11pt; color: #000; margin-bottom: 1.25rem; }
+  #cv-render-container.template-classic .section-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin-top: 1rem; margin-bottom: 0.5rem; padding-bottom: 0.1rem; }
+  
+  #cv-render-container.template-classic .cv-item-title { font-weight: bold; font-size: 11pt; color: #000; }
+  #cv-render-container.template-classic .cv-item-subtitle { font-weight: normal; font-style: italic; font-size: 11pt; color: #000; margin-left: 0.25rem; }
+  #cv-render-container.template-classic .cv-item-date { font-size: 11pt; font-weight: bold; color: #000; }
+  
+  #cv-render-container.template-classic .cv-skills { display: block; line-height: 1.6; }
+  #cv-render-container.template-classic .cv-skill-pill { background: transparent; padding: 0; color: #000; font-size: 11pt; display: inline; border-radius: 0; }
+  #cv-render-container.template-classic .cv-skill-pill::after { content: ", "; }
+  #cv-render-container.template-classic .cv-skill-pill:last-child::after { content: ""; }
+  
+  #cv-render-container.template-classic .cv-bullets li { font-size: 11pt; color: #000; margin-bottom: 0.2rem; }
+  #cv-render-container.template-classic .cv-summary { font-size: 11pt; color: #000; }
+  
+  /* Modern Template */
+  #cv-render-container.template-modern {
+    font-family: 'Inter', sans-serif;
+  }
+  #cv-render-container.template-modern h1 { font-size: 26pt; font-weight: 800; color: #0f172a; margin-bottom: 0.2rem; letter-spacing: -0.02em; }
+  #cv-render-container.template-modern .contact-info { font-size: 9.5pt; color: #64748b; margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  #cv-render-container.template-modern .section-title { font-size: 12pt; font-weight: 700; color: #2563eb; margin-top: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  #cv-render-container.template-modern .section-title::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
 
-  .result-editor:focus {
-    outline: none;
-    box-shadow: inset 0 0 0 2px oklch(0.12 0.01 240 / 0.05);
-    border-radius: 0.375rem;
+  /* Minimal Template */
+  #cv-render-container.template-minimal {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
+  #cv-render-container.template-minimal h1 { font-size: 20pt; font-weight: 300; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  #cv-render-container.template-minimal .contact-info { font-size: 9.5pt; color: #737373; margin-bottom: 2rem; }
+  #cv-render-container.template-minimal .section-title { font-size: 10pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2rem; margin-bottom: 1rem; color: #404040; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.25rem; }
 
-  /* Custom scrollbar for editor */
-  .result-editor::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .result-editor::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .result-editor::-webkit-scrollbar-thumb {
-    background: var(--color-primary-200);
-    border-radius: 3px;
-  }
+  /* Shared Typography */
+  .cv-summary { font-size: 10pt; line-height: 1.6; margin-bottom: 1rem; }
+  .cv-item { margin-bottom: 1rem; }
+  .cv-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem; }
+  .cv-item-title { font-weight: 600; font-size: 10.5pt; }
+  .cv-item-subtitle { font-weight: 500; font-size: 10pt; color: #444; }
+  .cv-item-date { font-size: 9pt; color: #666; white-space: nowrap; }
+  
+  .cv-bullets { list-style-type: disc; padding-left: 1.25rem; margin-top: 0.25rem; }
+  .cv-bullets li { font-size: 10pt; line-height: 1.5; margin-bottom: 0.25rem; color: #333; }
+  
+  .cv-skills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+  .cv-skill-pill { background: #f1f5f9; padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-size: 9pt; color: #334155; font-weight: 500; }
+  
+  .cl-content { font-size: 10.5pt; line-height: 1.7; white-space: pre-wrap; color: #333; }
 </style>
 
 <script>
   function initResultPreview() {
-    // ── DOM refs ──
     const emptyState = document.getElementById('result-empty');
     const loadingState = document.getElementById('result-loading');
     const contentState = document.getElementById('result-content');
-    const editor = document.getElementById('result-editor');
+    const cvContainer = document.getElementById('cv-render-container');
+    const templateSelector = document.getElementById('template-selector') as HTMLSelectElement;
+    const downloadBtn = document.getElementById('download-pdf-btn') as HTMLButtonElement;
+    const tabsContainer = document.getElementById('tabs-container');
     const tabCV = document.getElementById('tab-cv');
     const tabCL = document.getElementById('tab-cover-letter');
-    const copyBtn = document.getElementById('copy-btn');
-    const copyIcon = document.getElementById('copy-icon');
-    const copyCheckIcon = document.getElementById('copy-check-icon');
-    const copyText = document.getElementById('copy-text');
-    const downloadBtn = document.getElementById('download-pdf-btn');
-    const templateSelector = document.getElementById('template-selector') as HTMLSelectElement | null;
     const loadingDots = document.getElementById('loading-dots');
 
-    if (!emptyState || !loadingState || !contentState || !editor) return;
-
-    if (emptyState.dataset.initialized === 'true') {
-      console.log('[ResultPreview] Already initialized, skipping');
-      return;
-    }
+    if (!emptyState || !loadingState || !contentState || !cvContainer) return;
+    if (emptyState.dataset.initialized === 'true') return;
     emptyState.dataset.initialized = 'true';
-    console.log('[ResultPreview] Initializing component...');
 
-    // ── State ──
-    let results: Record<string, string> = {};
-    let activeTab: string = 'cv';
-    let dotsInterval: ReturnType<typeof setInterval> | null = null;
+    let currentData: any = null;
+    let activeType: 'cv' | 'cover-letter' = 'cv';
+    let dotsInterval: any = null;
 
-    // Reset UI to empty state initially
-    showEmpty();
-
-    // ── Animated loading dots ──
     function startLoadingDots() {
-      if (!loadingDots) return;
       let count = 0;
       dotsInterval = setInterval(() => {
         count = (count + 1) % 4;
-        loadingDots.textContent = '.'.repeat(count) || '\u00A0';
+        if(loadingDots) loadingDots.textContent = '.'.repeat(count) || '\u00A0';
       }, 500);
     }
-
     function stopLoadingDots() {
-      if (dotsInterval) {
-        clearInterval(dotsInterval);
-        dotsInterval = null;
-      }
-    }
-
-    // ── Show states ──
-    function showEmpty() {
-      console.log('[ResultPreview] Switching to empty state');
-      emptyState.classList.remove('hidden');
-      loadingState.classList.add('hidden');
-      contentState.classList.add('hidden');
-      stopLoadingDots();
+      if (dotsInterval) clearInterval(dotsInterval);
     }
 
     function showLoading() {
-      console.log('[ResultPreview] Switching to loading state');
       emptyState.classList.add('hidden');
-      loadingState.classList.remove('hidden');
       contentState.classList.add('hidden');
+      loadingState.classList.remove('hidden');
       startLoadingDots();
     }
 
     function showContent() {
-      console.log('[ResultPreview] Switching to content state');
       emptyState.classList.add('hidden');
       loadingState.classList.add('hidden');
       contentState.classList.remove('hidden');
       stopLoadingDots();
     }
 
-    // ── Tab handling ──
-    function setActiveTab(tab: string) {
-      activeTab = tab;
+    function renderCV(data: any, personalInfo: any) {
+      if (!data) return;
+      const { summary, experience, education, projects, skills } = data;
+      const { name, email, phone, linkedin } = personalInfo;
+      
+      const contactParts = [email, phone, linkedin].filter(Boolean).join('  |  ');
+      
+      let html = `
+        <h1>${name || 'Your Name'}</h1>
+        <div class="contact-info">${contactParts}</div>
+      `;
 
-      // Update tab UI
-      [tabCV, tabCL].forEach(t => t?.classList.remove('active'));
-      if (tab === 'cv') {
-        tabCV?.classList.add('active');
-      } else {
-        tabCL?.classList.add('active');
+      if (summary) {
+        html += `
+          <div class="section-title">Professional Summary</div>
+          <div class="cv-summary">${summary}</div>
+        `;
       }
 
-      // Update editor content
-      if (results[tab]) {
-        editor.textContent = results[tab];
-      } else {
-        editor.innerHTML = '<p class="text-text-muted italic">No content generated yet for this tab. Click a generate button to create content.</p>';
+      if (experience && experience.length > 0) {
+        html += `<div class="section-title">Experience</div>`;
+        experience.forEach((exp: any) => {
+          html += `
+            <div class="cv-item">
+              <div class="cv-item-header">
+                <div>
+                  <span class="cv-item-title">${exp.title}</span>, 
+                  <span class="cv-item-subtitle">${exp.company}</span>
+                </div>
+                <div class="cv-item-date">${exp.date}</div>
+              </div>
+              <ul class="cv-bullets">
+                ${exp.description ? exp.description.map((b: string) => `<li>${b}</li>`).join('') : ''}
+              </ul>
+            </div>
+          `;
+        });
       }
+
+      if (projects && projects.length > 0) {
+        html += `<div class="section-title">Projects</div>`;
+        projects.forEach((proj: any) => {
+          html += `
+            <div class="cv-item">
+              <div class="cv-item-header">
+                <span class="cv-item-title">${proj.name}</span>
+              </div>
+              ${proj.description ? `<div class="cv-item-subtitle" style="margin-bottom:0.25rem;">${proj.description}</div>` : ''}
+              <ul class="cv-bullets">
+                ${proj.details ? proj.details.map((b: string) => `<li>${b}</li>`).join('') : ''}
+              </ul>
+            </div>
+          `;
+        });
+      }
+
+      if (education && education.length > 0) {
+        html += `<div class="section-title">Education</div>`;
+        education.forEach((edu: any) => {
+          html += `
+            <div class="cv-item" style="margin-bottom:0.5rem;">
+              <div class="cv-item-header">
+                <div>
+                  <span class="cv-item-title">${edu.degree}</span>, 
+                  <span class="cv-item-subtitle">${edu.institution}</span>
+                </div>
+                <div class="cv-item-date">${edu.date}</div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      if (skills && skills.length > 0) {
+        html += `<div class="section-title">Skills</div>`;
+        html += `<div class="cv-skills">`;
+        skills.forEach((skill: string) => {
+          html += `<span class="cv-skill-pill">${skill}</span>`;
+        });
+        html += `</div>`;
+      }
+
+      if(cvContainer) cvContainer.innerHTML = html;
     }
 
-    tabCV?.addEventListener('click', () => setActiveTab('cv'));
-    tabCL?.addEventListener('click', () => setActiveTab('cover-letter'));
+    function renderCoverLetter(text: string, personalInfo: any) {
+      const { name, email, phone, linkedin } = personalInfo;
+      const contactParts = [email, phone, linkedin].filter(Boolean).join('  |  ');
+      
+      let html = `
+        <h1>${name || 'Your Name'}</h1>
+        <div class="contact-info">${contactParts}</div>
+        <div class="cl-content mt-8">${text}</div>
+      `;
+      if(cvContainer) cvContainer.innerHTML = html;
+    }
 
-    // ── Listen for events from InputForm ──
+    function updateTemplate() {
+      if(!cvContainer) return;
+      const template = templateSelector.value;
+      cvContainer.className = `bg-white shadow-sm border border-border mx-auto print-area template-${template}`;
+      cvContainer.style.maxWidth = '210mm';
+      cvContainer.style.minHeight = '297mm';
+      cvContainer.style.padding = '2rem';
+    }
+
+    templateSelector.addEventListener('change', updateTemplate);
+
     window.addEventListener('generation-start', ((e: CustomEvent) => {
-      const { type } = e.detail;
-      console.log('[ResultPreview] Received generation-start event for:', type);
-      activeTab = type;
+      activeType = e.detail.type;
       showLoading();
     }) as EventListener);
 
     window.addEventListener('result-ready', ((e: CustomEvent) => {
-      const { type, result } = e.detail;
-      console.log('[ResultPreview] Received result-ready event for:', type);
-      results[type] = result;
-      activeTab = type;
-      setActiveTab(type);
+      activeType = e.detail.type;
+      currentData = e.detail.result;
+      
+      // Grab personal info from DOM inputs
+      const personalInfo = {
+        name: (document.getElementById('input-fullname') as HTMLInputElement)?.value || '',
+        email: (document.getElementById('input-email') as HTMLInputElement)?.value || '',
+        phone: (document.getElementById('input-phone') as HTMLInputElement)?.value || '',
+        linkedin: (document.getElementById('input-linkedin') as HTMLInputElement)?.value || ''
+      };
+
+      if (activeType === 'cv') {
+        let cvData = currentData;
+        if (typeof currentData === 'string') {
+          try {
+            cvData = JSON.parse(currentData);
+          } catch(err) {
+            console.error("Could not parse CV JSON", err);
+          }
+        }
+        renderCV(cvData, personalInfo);
+      } else {
+        renderCoverLetter(typeof currentData === 'string' ? currentData : JSON.stringify(currentData), personalInfo);
+      }
+      
+      updateTemplate();
       showContent();
     }) as EventListener);
 
-    window.addEventListener('generation-error', ((e: CustomEvent) => {
-      const { type, error } = e.detail || {};
-      console.warn('[ResultPreview] Received generation-error event:', type, error);
-      // If we have previous results, show them; otherwise show empty
-      if (Object.keys(results).length > 0) {
-        showContent();
-      } else {
-        showEmpty();
+    window.addEventListener('generation-error', (() => {
+      if (currentData) showContent();
+      else {
+        emptyState?.classList.remove('hidden');
+        loadingState?.classList.add('hidden');
       }
     }) as EventListener);
 
-    // ── Copy to Clipboard ──
-    copyBtn?.addEventListener('click', async () => {
-      const text = editor.textContent || editor.innerText || '';
-      if (!text.trim()) return;
-
-      try {
-        await navigator.clipboard.writeText(text);
-
-        // Show checkmark feedback
-        if (copyIcon && copyCheckIcon && copyText) {
-          copyIcon.classList.add('hidden');
-          copyCheckIcon.classList.remove('hidden');
-          copyText.textContent = 'Copied!';
-
-          setTimeout(() => {
-            copyIcon.classList.remove('hidden');
-            copyCheckIcon.classList.add('hidden');
-            copyText.textContent = 'Copy';
-          }, 2000);
-        }
-      } catch {
-        // Fallback
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-
-        if (copyText) {
-          copyText.textContent = 'Copied!';
-          setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
-        }
-      }
-    });
-
-    // ── Download PDF ──
-    downloadBtn?.addEventListener('click', async () => {
-      const content = editor.textContent || editor.innerText || '';
-      if (!content.trim()) return;
-
-      // Get user data from form
-      const name = (document.getElementById('input-fullname') as HTMLInputElement)?.value || 'Resume';
-      const email = (document.getElementById('input-email') as HTMLInputElement)?.value || '';
-      const phone = (document.getElementById('input-phone') as HTMLInputElement)?.value || '';
-      const linkedin = (document.getElementById('input-linkedin') as HTMLInputElement)?.value || '';
-      const template = templateSelector?.value || 'classic';
-
-      // Change button state
-      const originalHTML = downloadBtn.innerHTML;
-      downloadBtn.innerHTML = `
-        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-        </svg>
-        <span>Preparing...</span>
-      `;
-      (downloadBtn as HTMLButtonElement).disabled = true;
-
-      try {
-        const { generatePDF } = await import('../lib/pdf-generator');
-        await generatePDF({
-          name,
-          email,
-          phone: phone || undefined,
-          linkedin: linkedin || undefined,
-          content,
-          type: activeTab === 'cv' ? 'cv' : 'cover-letter',
-          template: template as any,
-        });
-      } catch (err) {
-        console.error('PDF generation error:', err);
-        alert('Failed to generate PDF. Please try again.');
-      } finally {
-        downloadBtn.innerHTML = originalHTML;
-        (downloadBtn as HTMLButtonElement).disabled = false;
-      }
+    // Download PDF triggers window.print for the beautifully rendered HTML
+    downloadBtn.addEventListener('click', () => {
+      window.print();
     });
   }
 
-  // Initialize immediately
   initResultPreview();
-
-  // Re-run on client transitions
   document.addEventListener('astro:page-load', initResultPreview);
 </script>
+
+<style is:global>
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #cv-render-container, #cv-render-container * {
+      visibility: visible;
+    }
+    #cv-render-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    @page {
+      margin: 0.5cm;
+    }
+  }
+</style>

@@ -2,9 +2,17 @@
 export const prerender = false;
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
-import InputForm from '../components/InputForm.astro';
-import ResultPreview from '../components/ResultPreview.astro';
+import InputForm from '../components/InputForm.tsx';
+import ResultPreview from '../components/ResultPreview.tsx';
 import Footer from '../components/Footer.astro';
+import { getSupabase } from '../lib/supabase';
+
+const supabase = getSupabase(Astro.cookies);
+const { data: { session } } = await supabase.auth.getSession();
+
+if (!session) {
+  return Astro.redirect('/api/auth/signin');
+}
 ---
 
 <Layout title="Create Resume - CareerGen" description="Generate professional, ATS-friendly resumes and cover letters with AI. Free, private, and powerful.">
@@ -29,8 +37,8 @@ import Footer from '../components/Footer.astro';
 
       <!-- Two Column Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        <InputForm />
-        <ResultPreview />
+        <InputForm client:load />
+        <ResultPreview client:load />
       </div>
     </div>
   </main>
