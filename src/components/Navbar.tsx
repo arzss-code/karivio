@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import { Sparkles, Menu, X, LogOut, ChevronDown, User, Gem } from 'lucide-react';
+import { useStore } from '@nanostores/react';
+import { userProfileState, setUserProfile, updateCredits } from '@/lib/userStore';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -14,9 +16,11 @@ export default function Navbar() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const userProfile = useStore(userProfileState);
 
   useEffect(() => {
+    let realtimeChannel: any = null;
+
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -27,9 +31,30 @@ export default function Navbar() {
           .single();
         
         if (profile) {
-          setUserProfile(profile);
+          setUserProfile({ id: session.user.id, ...profile });
+
+          // Listen to Realtime updates for the current user's profile
+          const channelName = `profile-credits-sync-${session.user.id}-${Date.now()}`;
+          realtimeChannel = supabase.channel(channelName)
+            .on(
+              'postgres_changes',
+              {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'profiles',
+                filter: `id=eq.${session.user.id}`
+              },
+              (payload) => {
+                if (payload.new && typeof payload.new.credits_balance !== 'undefined') {
+                  updateCredits(payload.new.credits_balance);
+                }
+              }
+            )
+            .subscribe();
+
         } else {
           setUserProfile({
+            id: session.user.id,
             full_name: session.user.user_metadata?.full_name || 'User',
             email: session.user.email,
             credits_balance: 0
@@ -44,7 +69,12 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+      }
+    };
   }, []);
 
   const handleSignIn = async () => {

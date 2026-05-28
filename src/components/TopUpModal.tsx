@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
+import { Gem, X, Check } from 'lucide-react';
 
 export default function TopUpModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,9 +41,8 @@ export default function TopUpModal() {
       // @ts-ignore
       window.snap.pay(token, {
         onSuccess: function(result: any) {
-          alert("Payment success! Your credits will be updated shortly.");
+          alert("Payment success! Your credits will be updated automatically.");
           closeModal();
-          setTimeout(() => window.location.reload(), 2000);
         },
         onPending: function(result: any) {
           alert("Waiting for your payment!");
@@ -71,35 +71,40 @@ export default function TopUpModal() {
       <Script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY} strategy="lazyOnload" />
       
       <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-4">
-        <div className="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm transition-opacity" onClick={closeModal}></div>
+        <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm transition-opacity" onClick={closeModal}></div>
         
-        <div className="relative w-full max-w-md transform rounded-2xl bg-white p-6 shadow-xl transition-all animate-scale-in">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
-              <span>💎</span> Top Up Credits
+        <div className="relative w-full max-w-md transform rounded-3xl bg-white p-7 shadow-2xl transition-all animate-scale-in border border-neutral-100">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-neutral-900 flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-900">
+                <Gem className="h-4 w-4" />
+              </div>
+              Top Up Credits
             </h3>
-            <button onClick={closeModal} className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 transition-colors">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+            <button onClick={closeModal} className="rounded-full p-2 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 transition-colors">
+              <X className="h-5 w-5" />
             </button>
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-xl border-2 border-blue-100 bg-blue-50 p-4 relative overflow-hidden">
-              <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-blue-200/50"></div>
+            <div className="rounded-2xl border-2 border-neutral-200 bg-neutral-50 p-5 relative overflow-hidden">
+              <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-neutral-200/30"></div>
               <div className="relative z-10">
-                <div className="text-sm font-semibold text-blue-900 mb-1">Starter Pack</div>
-                <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-2xl font-bold text-neutral-900">Rp 10.000</span>
+                <div className="text-sm font-semibold text-neutral-500 mb-1">Starter Pack</div>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span className="text-3xl font-extrabold text-neutral-900">Rp 10.000</span>
                 </div>
-                <ul className="text-sm text-neutral-700 space-y-1 mb-4">
-                  <li className="flex items-center gap-2">
-                    <svg className="h-4 w-4 text-[var(--color-success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                <ul className="text-sm font-medium text-neutral-700 space-y-2.5 mb-6">
+                  <li className="flex items-center gap-2.5">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                    </div>
                     Get 10 AI Generations
                   </li>
-                  <li className="flex items-center gap-2">
-                    <svg className="h-4 w-4 text-[var(--color-success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  <li className="flex items-center gap-2.5">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                    </div>
                     Unlock ATS Templates
                   </li>
                 </ul>
@@ -107,12 +112,12 @@ export default function TopUpModal() {
                 <button 
                   onClick={handleBuy} 
                   disabled={isLoading}
-                  className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl bg-neutral-900 py-3 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:active:scale-100"
                 >
                   {!isLoading ? (
                     <span>Buy with QRIS / GoPay</span>
                   ) : (
-                    <svg className="h-4 w-4 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                     </svg>
@@ -122,7 +127,7 @@ export default function TopUpModal() {
             </div>
           </div>
           
-          <p className="mt-4 text-center text-xs text-[var(--color-text-muted)]">
+          <p className="mt-5 text-center text-xs font-medium text-neutral-400">
             Secure payment processed by Midtrans
           </p>
         </div>
