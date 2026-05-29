@@ -22,19 +22,19 @@ export default function Navbar() {
     let realtimeChannel: any = null;
 
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('credits_balance, full_name, email')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .single();
 
         if (profile) {
-          setUserProfile({ id: session.user.id, ...profile });
+          setUserProfile({ id: user.id, ...profile });
 
           // Listen to Realtime updates for the current user's profile
-          const channelName = `profile-credits-sync-${session.user.id}-${Date.now()}`;
+          const channelName = `profile-credits-sync-${user.id}-${Date.now()}`;
           realtimeChannel = supabase.channel(channelName)
             .on(
               'postgres_changes',
@@ -42,7 +42,7 @@ export default function Navbar() {
                 event: 'UPDATE',
                 schema: 'public',
                 table: 'profiles',
-                filter: `id=eq.${session.user.id}`
+                filter: `id=eq.${user.id}`
               },
               (payload) => {
                 if (payload.new && typeof payload.new.credits_balance !== 'undefined') {
@@ -54,9 +54,9 @@ export default function Navbar() {
 
         } else {
           setUserProfile({
-            id: session.user.id,
-            full_name: session.user.user_metadata?.full_name || 'User',
-            email: session.user.email || '',
+            id: user.id,
+            full_name: user.user_metadata?.full_name || 'User',
+            email: user.email || '',
             credits_balance: 0
           });
         }

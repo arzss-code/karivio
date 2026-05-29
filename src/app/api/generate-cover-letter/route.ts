@@ -10,9 +10,9 @@ export async function POST(request: Request) {
   try {
     // 1. Check Auth & Credits
     const supabase = await getSupabase();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
     
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized. Please login first.' }, { status: 401 });
     }
 
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('credits_balance')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
 
     if (!profile || profile.credits_balance <= 0) {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Rate limiting
-    const rateCheck = checkRateLimit(session.user.id);
+    const rateCheck = checkRateLimit(user.id);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again in a moment.', retryAfterMs: rateCheck.retryAfterMs },
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     // 3. Deduct Credits & Save Document (Atomically via RPC)
     const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('consume_credit_and_save_doc', {
-      p_user_id: session.user.id,
+      p_user_id: user.id,
       p_doc_type: 'cover_letter',
       p_content: result
     });

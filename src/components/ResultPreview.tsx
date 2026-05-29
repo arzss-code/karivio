@@ -1,9 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { generationState } from '../lib/store';
+import { generationState, updateGenerationResultField } from '../lib/store';
 import { FileText, Loader2, Download, Settings2, Printer } from 'lucide-react';
 import { generatePDF } from '../lib/pdf-generator';
+import EditableField from './EditableField';
 
 export default function ResultPreview() {
   const state = useStore(generationState);
@@ -81,10 +82,12 @@ export default function ResultPreview() {
         <style dangerouslySetInnerHTML={{
           __html: `
           .cv-document {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Times', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #000;
             line-height: 1.4;
             font-size: 11pt;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
           }
           .cv-header {
             text-align: center;
@@ -108,9 +111,13 @@ export default function ResultPreview() {
             margin-top: 16px;
             margin-bottom: 8px;
             padding-bottom: 2px;
+            page-break-after: avoid;
+            break-after: avoid;
           }
           .cv-item {
             margin-bottom: 12px;
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
           .cv-item-header {
             display: flex;
@@ -175,9 +182,17 @@ export default function ResultPreview() {
 
         {header && (
           <div className="cv-header">
-            <div className="cv-name">{typeof header.name === 'string' ? header.name : ''}</div>
-            <div className="cv-contact">
-              {[header.email, header.phone, header.linkedin].filter(v => typeof v === 'string' && v).join('  |  ')}
+            <div className="cv-name">
+              <EditableField
+                value={typeof header.name === 'string' ? header.name : ''}
+                onChange={(val) => updateGenerationResultField(['header', 'name'], val)}
+                placeholder="Your Name"
+              />
+            </div>
+            <div className="cv-contact flex justify-center gap-2 items-center flex-wrap">
+              <EditableField value={typeof header.email === 'string' ? header.email : ''} onChange={(val) => updateGenerationResultField(['header', 'email'], val)} placeholder="Email" /> |
+              <EditableField value={typeof header.phone === 'string' ? header.phone : ''} onChange={(val) => updateGenerationResultField(['header', 'phone'], val)} placeholder="Phone" /> |
+              <EditableField value={typeof header.linkedin === 'string' ? header.linkedin : ''} onChange={(val) => updateGenerationResultField(['header', 'linkedin'], val)} placeholder="LinkedIn" />
             </div>
           </div>
         )}
@@ -185,7 +200,9 @@ export default function ResultPreview() {
         {summary && typeof summary === 'string' && (
           <>
             <div className="cv-section-title">Professional Summary</div>
-            <div className="cv-summary">{summary}</div>
+            <div className="cv-summary">
+              <EditableField value={summary} onChange={(val) => updateGenerationResultField(['summary'], val)} multiline />
+            </div>
           </>
         )}
 
@@ -194,17 +211,27 @@ export default function ResultPreview() {
             <div className="cv-section-title">Professional Experience</div>
             {experience.map((exp: any, i: number) => (
               <div key={i} className="cv-item">
-                <div className="cv-item-header">
+                <div className="cv-item-header flex-wrap">
                   <div>
-                    <span className="cv-item-title">{typeof exp.title === 'string' ? exp.title : ''}</span>,{' '}
-                    <span className="cv-item-subtitle">{typeof exp.company === 'string' ? exp.company : ''}</span>
+                    <span className="cv-item-title">
+                      <EditableField value={typeof exp.title === 'string' ? exp.title : ''} onChange={(val) => updateGenerationResultField(['experience', i, 'title'], val)} placeholder="Job Title" />
+                    </span>,{' '}
+                    <span className="cv-item-subtitle">
+                      <EditableField value={typeof exp.company === 'string' ? exp.company : ''} onChange={(val) => updateGenerationResultField(['experience', i, 'company'], val)} placeholder="Company" />
+                    </span>
                   </div>
-                  <div className="cv-item-date">{typeof exp.date === 'string' ? exp.date : ''}</div>
+                  <div className="cv-item-date">
+                    <EditableField value={typeof exp.date === 'string' ? exp.date : ''} onChange={(val) => updateGenerationResultField(['experience', i, 'date'], val)} placeholder="Date" />
+                  </div>
                 </div>
                 {Array.isArray(exp.description) && (
                   <ul className="cv-bullets">
                     {exp.description.map((b: any, j: number) => (
-                      typeof b === 'string' ? <li key={j}>{b}</li> : null
+                      typeof b === 'string' ? (
+                        <li key={j}>
+                          <EditableField value={b} onChange={(val) => updateGenerationResultField(['experience', i, 'description', j], val)} multiline />
+                        </li>
+                      ) : null
                     ))}
                   </ul>
                 )}
@@ -219,15 +246,23 @@ export default function ResultPreview() {
             {projects.map((proj: any, i: number) => (
               <div key={i} className="cv-item">
                 <div className="cv-item-header">
-                  <span className="cv-item-title">{typeof proj.name === 'string' ? proj.name : ''}</span>
+                  <span className="cv-item-title">
+                    <EditableField value={typeof proj.name === 'string' ? proj.name : ''} onChange={(val) => updateGenerationResultField(['projects', i, 'name'], val)} placeholder="Project Name" />
+                  </span>
                 </div>
                 {typeof proj.description === 'string' && proj.description && (
-                  <div className="cv-item-subtitle mb-1" style={{ fontSize: '10pt' }}>{proj.description}</div>
+                  <div className="cv-item-subtitle mb-1" style={{ fontSize: '10pt' }}>
+                    <EditableField value={proj.description} onChange={(val) => updateGenerationResultField(['projects', i, 'description'], val)} multiline />
+                  </div>
                 )}
                 {Array.isArray(proj.details) && (
                   <ul className="cv-bullets">
                     {proj.details.map((b: any, j: number) => (
-                      typeof b === 'string' ? <li key={j}>{b}</li> : null
+                      typeof b === 'string' ? (
+                        <li key={j}>
+                          <EditableField value={b} onChange={(val) => updateGenerationResultField(['projects', i, 'details', j], val)} multiline />
+                        </li>
+                      ) : null
                     ))}
                   </ul>
                 )}
@@ -241,17 +276,29 @@ export default function ResultPreview() {
             <div className="cv-section-title">Education</div>
             {education.map((edu: any, i: number) => (
               <div key={i} className="cv-item" style={{ marginBottom: '6px' }}>
-                <div className="cv-item-header">
+                <div className="cv-item-header flex-wrap">
                   <div>
-                    <span className="cv-item-title">{typeof edu.degree === 'string' ? edu.degree : ''}</span>,{' '}
-                    <span className="cv-item-subtitle">{typeof edu.institution === 'string' ? edu.institution : ''}</span>
+                    <span className="cv-item-title">
+                      <EditableField value={typeof edu.degree === 'string' ? edu.degree : ''} onChange={(val) => updateGenerationResultField(['education', i, 'degree'], val)} placeholder="Degree" />
+                    </span>,{' '}
+                    <span className="cv-item-subtitle">
+                      <EditableField value={typeof edu.institution === 'string' ? edu.institution : ''} onChange={(val) => updateGenerationResultField(['education', i, 'institution'], val)} placeholder="Institution" />
+                    </span>
                   </div>
-                  <div className="cv-item-date">{typeof edu.date === 'string' ? edu.date : ''}</div>
+                  <div className="cv-item-date">
+                    <EditableField value={typeof edu.date === 'string' ? edu.date : ''} onChange={(val) => updateGenerationResultField(['education', i, 'date'], val)} placeholder="Date" />
+                  </div>
                 </div>
                 {(edu.gpa || edu.description) && (
-                  <div className="cv-edu-meta">
-                    {typeof edu.gpa === 'string' && edu.gpa && <span>GPA: {edu.gpa}{edu.description ? '  |  ' : ''}</span>}
-                    {typeof edu.description === 'string' && edu.description && <span>{edu.description}</span>}
+                  <div className="cv-edu-meta flex flex-wrap gap-2">
+                    {typeof edu.gpa === 'string' && edu.gpa && (
+                      <span>GPA: <EditableField value={edu.gpa} onChange={(val) => updateGenerationResultField(['education', i, 'gpa'], val)} placeholder="GPA" />{edu.description ? '  |  ' : ''}</span>
+                    )}
+                    {typeof edu.description === 'string' && edu.description && (
+                      <span>
+                        <EditableField value={edu.description} onChange={(val) => updateGenerationResultField(['education', i, 'description'], val)} />
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -264,7 +311,11 @@ export default function ResultPreview() {
             <div className="cv-section-title">Achievements</div>
             <ul className="cv-bullets">
               {achievements.map((a: any, i: number) => (
-                typeof a === 'string' ? <li key={i}>{a}</li> : null
+                typeof a === 'string' ? (
+                  <li key={i}>
+                    <EditableField value={a} onChange={(val) => updateGenerationResultField(['achievements', i], val)} multiline />
+                  </li>
+                ) : null
               ))}
             </ul>
           </>
@@ -274,12 +325,24 @@ export default function ResultPreview() {
           <>
             <div className="cv-section-title">Certifications</div>
             {certifications.map((cert: any, i: number) => {
-              if (typeof cert === 'string') return <div key={i} style={{ marginBottom: 4 }}>{cert}</div>;
+              if (typeof cert === 'string') {
+                return (
+                  <div key={i} style={{ marginBottom: 4 }}>
+                    <EditableField value={cert} onChange={(val) => updateGenerationResultField(['certifications', i], val)} />
+                  </div>
+                );
+              }
               return (
-                <div key={i} style={{ marginBottom: 4 }}>
-                  <span className="cv-item-title">{typeof cert.name === 'string' ? cert.name : ''}</span>
-                  {cert.issuer && typeof cert.issuer === 'string' && <span> — {cert.issuer}</span>}
-                  {cert.date && typeof cert.date === 'string' && <span className="cv-item-date"> ({cert.date})</span>}
+                <div key={i} style={{ marginBottom: 4 }} className="page-break-inside-avoid">
+                  <span className="cv-item-title">
+                    <EditableField value={typeof cert.name === 'string' ? cert.name : ''} onChange={(val) => updateGenerationResultField(['certifications', i, 'name'], val)} placeholder="Certification Name" />
+                  </span>
+                  {cert.issuer && typeof cert.issuer === 'string' && (
+                    <span> — <EditableField value={cert.issuer} onChange={(val) => updateGenerationResultField(['certifications', i, 'issuer'], val)} placeholder="Issuer" /></span>
+                  )}
+                  {cert.date && typeof cert.date === 'string' && (
+                    <span className="cv-item-date"> (<EditableField value={cert.date} onChange={(val) => updateGenerationResultField(['certifications', i, 'date'], val)} placeholder="Date" />)</span>
+                  )}
                 </div>
               );
             })}
@@ -290,7 +353,15 @@ export default function ResultPreview() {
           <>
             <div className="cv-section-title">Skills</div>
             <div className="cv-skills-text">
-              {skills.filter((s: any) => typeof s === 'string').join(' • ')}
+              {/* To make comma-separated skills editable individually, we map them */}
+              {skills.map((s: any, i: number) => (
+                <React.Fragment key={i}>
+                  {typeof s === 'string' ? (
+                    <EditableField value={s} onChange={(val) => updateGenerationResultField(['skills', i], val)} />
+                  ) : null}
+                  {i < skills.length - 1 ? <span className="mx-1">•</span> : null}
+                </React.Fragment>
+              ))}
             </div>
           </>
         )}
@@ -300,7 +371,7 @@ export default function ResultPreview() {
 
   const renderCoverLetter = (text: string) => {
     return (
-      <div className="cl-content whitespace-pre-wrap leading-relaxed text-neutral-900" style={{ fontFamily: "'Times New Roman', Times, serif", fontSize: '11pt' }}>
+      <div className="cl-content whitespace-pre-wrap leading-relaxed text-neutral-900" style={{ fontFamily: "'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: '11pt', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
         <style dangerouslySetInnerHTML={{
           __html: `
           @media print {
@@ -327,7 +398,12 @@ export default function ResultPreview() {
             }
           }
         `}} />
-        {text}
+        <EditableField
+          value={text}
+          onChange={(val) => updateGenerationResultField([], val)}
+          multiline
+          className="block w-full min-h-[500px]"
+        />
       </div>
     );
   };

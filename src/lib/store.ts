@@ -29,3 +29,21 @@ export const setGenerationType = (type: GenerationType) => {
 export const setGenerationError = (error: string) => {
   generationState.set({ ...generationState.get(), isGenerating: false, error });
 };
+
+export const updateGenerationResultField = (path: (string | number)[], value: any) => {
+  const currentState = generationState.get();
+  if (!currentState.result) return;
+
+  const newResult = JSON.parse(JSON.stringify(currentState.result)); // Deep clone
+  let current = newResult;
+  
+  for (let i = 0; i < path.length - 1; i++) {
+    if (current[path[i]] === undefined) {
+      current[path[i]] = typeof path[i+1] === 'number' ? [] : {};
+    }
+    current = current[path[i]];
+  }
+  
+  current[path[path.length - 1]] = value;
+  setGenerationResult(newResult);
+};

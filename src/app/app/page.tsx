@@ -22,8 +22,8 @@ export default function AppPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         setIsAuthenticated(false);
         setIsAuthChecking(false);
       } else {

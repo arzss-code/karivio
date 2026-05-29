@@ -4,9 +4,9 @@ import midtransClient from 'midtrans-client';
 
 export async function POST(request: Request) {
   const supabase = await getSupabase();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const amount = 10000;
     const credit_added = 10;
     const order_id = `TRX-${crypto.randomUUID()}`;
-    const user_id = session.user.id;
+    const user_id = user.id;
 
     // 1. Insert into supabase transactions (pending)
     const supabaseAdmin = getSupabaseServiceRole();
@@ -51,8 +51,8 @@ export async function POST(request: Request) {
         gross_amount: amount
       },
       customer_details: {
-        email: session.user.email,
-        first_name: session.user.user_metadata?.full_name || 'User',
+        email: user.email,
+        first_name: user.user_metadata?.full_name || 'User',
       },
       item_details: [{
         id: "starter_pack",

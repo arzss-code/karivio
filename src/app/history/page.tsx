@@ -64,8 +64,8 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         setIsAuthenticated(false);
         setIsAuthChecking(false);
         setIsLoading(false);

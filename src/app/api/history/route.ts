@@ -4,9 +4,9 @@ import { getSupabase, getSupabaseServiceRole } from '@/lib/supabase';
 export async function GET(request: Request) {
   try {
     const supabase = await getSupabase();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const { data: documents, error } = await supabaseAdmin
       .from('documents')
       .select('id, document_type, content, created_at')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -41,9 +41,9 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await getSupabase();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -53,7 +53,7 @@ export async function DELETE(request: Request) {
       .from('documents')
       .delete()
       .eq('id', id)
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     if (error) {
       return NextResponse.json({ error: 'Failed to delete document' }, { status: 500 });
