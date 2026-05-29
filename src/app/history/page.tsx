@@ -7,8 +7,8 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import TopUpModal from '@/components/TopUpModal';
-import { FileText, Loader2, Trash2, Clock, ArrowRight, Lock, Eye } from 'lucide-react';
-import { setGenerationResult, setGenerationType } from '@/lib/store';
+import { FileText, Loader2, Trash2, Clock, ArrowRight, Lock, Eye, Target } from 'lucide-react';
+import { setGenerationResult, setGenerationType, setAtsHistory } from '@/lib/store';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -16,12 +16,15 @@ const supabase = createBrowserClient(supabaseUrl, supabaseKey);
 
 interface HistoryDoc {
   id: string;
-  document_type: 'resume' | 'cover_letter';
+  document_type: 'resume' | 'cover_letter' | 'ats_check';
   content: any;
   created_at: string;
 }
 
 function getDocTitle(doc: HistoryDoc): string {
+  if (doc.document_type === 'ats_check') {
+    return `ATS Match Score: ${doc.content?.matchScore || 0}%`;
+  }
   if (doc.document_type === 'resume' && doc.content?.header?.name) {
     return `Resume — ${doc.content.header.name}`;
   }
@@ -32,6 +35,11 @@ function getDocTitle(doc: HistoryDoc): string {
 }
 
 function getDocPreview(doc: HistoryDoc): string {
+  if (doc.document_type === 'ats_check') {
+    const kw = doc.content?.missingKeywords?.length || 0;
+    const title = doc.content?.jobDescription ? 'Targeted JD' : 'General Check';
+    return `Analysis: ${title} | Missing Keywords: ${kw}`;
+  }
   if (doc.document_type === 'resume' && doc.content?.summary) {
     return typeof doc.content.summary === 'string'
       ? doc.content.summary.slice(0, 160) + '...'
@@ -94,6 +102,11 @@ export default function HistoryPage() {
   };
 
   const handleLoad = (doc: HistoryDoc) => {
+    if (doc.document_type === 'ats_check') {
+      setAtsHistory(doc.content, doc.content?.cvText || '', doc.content?.jobDescription || '');
+      router.push('/ats-checker');
+      return;
+    }
     const type = doc.document_type === 'resume' ? 'cv' : 'cover-letter';
     setGenerationResult(doc.content);
     setGenerationType(type as any);
@@ -217,19 +230,22 @@ export default function HistoryPage() {
                   <div className="p-4 sm:p-5">
                     <div className="flex items-start gap-3 sm:gap-4">
                       {/* Icon */}
-                      <div className="shrink-0 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-neutral-100 text-neutral-600 border border-neutral-200">
-                        <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <div className={`shrink-0 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl border ${
+                        doc.document_type === 'ats_check' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-neutral-100 text-neutral-600 border-neutral-200'
+                      }`}>
+                        {doc.document_type === 'ats_check' ? <Target className="h-4 w-4 sm:h-5 sm:w-5" /> : <FileText className="h-4 w-4 sm:h-5 sm:w-5" />}
                       </div>
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h3 className="text-sm font-bold text-neutral-900 truncate max-w-[160px] sm:max-w-none">{getDocTitle(doc)}</h3>
-                          <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${doc.document_type === 'resume'
-                            ? 'bg-neutral-900 text-white'
-                            : 'bg-neutral-100 text-neutral-600 border border-neutral-200'
+                          <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                            doc.document_type === 'resume' ? 'bg-neutral-900 text-white' : 
+                            doc.document_type === 'ats_check' ? 'bg-blue-600 text-white' :
+                            'bg-neutral-100 text-neutral-600 border border-neutral-200'
                             }`}>
-                            {doc.document_type === 'resume' ? 'CV' : 'Cover Letter'}
+                            {doc.document_type === 'resume' ? 'CV' : doc.document_type === 'ats_check' ? 'ATS Check' : 'Cover Letter'}
                           </span>
                         </div>
                         <p className="text-xs text-neutral-500 leading-relaxed line-clamp-2 mb-2">

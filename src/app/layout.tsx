@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "CareerGen - AI Resume & Cover Letter Builder",
+  title: "Karivio - AI Resume & Cover Letter Builder",
   description: "Build professional, ATS-friendly resumes and cover letters in seconds with AI. Free, private, and easy to use.",
 };
 

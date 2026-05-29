@@ -47,3 +47,17 @@ export const updateGenerationResultField = (path: (string | number)[], value: an
   current[path[path.length - 1]] = value;
   setGenerationResult(newResult);
 };
+
+export const atsHistoryState = atom<{
+  loadedResult: any | null;
+  cvText: string | null;
+  jobDescription: string | null;
+}>({
+  loadedResult: null,
+  cvText: null,
+  jobDescription: null,
+});
+
+export const setAtsHistory = (result: any, cvText: string, jobDescription: string) => {
+  atsHistoryState.set({ loadedResult: result, cvText, jobDescription });
+};

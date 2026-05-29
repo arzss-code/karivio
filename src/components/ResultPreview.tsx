@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { generationState, updateGenerationResultField } from '../lib/store';
-import { FileText, Loader2, Download, Settings2, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
+import { FileText, Loader2, Download, Settings2, ZoomIn, ZoomOut, Maximize, Target } from 'lucide-react';
 import { generatePDF } from '../lib/pdf-generator';
+import Link from 'next/link';
 import EditableField from './EditableField';
 import ClassicHTML from './templates/cv/ClassicHTML';
 import ModernHTML from './templates/cv/ModernHTML';
@@ -162,6 +163,15 @@ export default function ResultPreview() {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
+            {state.type === 'cv' && (
+              <Link
+                href="/ats-checker"
+                className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-blue-50 px-5 py-2 text-sm font-semibold text-blue-700 shadow-sm border border-blue-200 hover:bg-blue-100 transition-colors active:scale-95"
+              >
+                <Target className="h-4 w-4" />
+                Check ATS Score
+              </Link>
+            )}
             <button
               onClick={handleDirectDownload}
               disabled={isDownloading}

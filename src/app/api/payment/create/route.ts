@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         id: "starter_pack",
         price: amount,
         quantity: 1,
-        name: "10 AI Generations (CareerGen)"
+        name: "10 AI Generations (Karivio)"
       }]
     };
 
