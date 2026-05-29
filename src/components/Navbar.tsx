@@ -99,8 +99,8 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="group flex items-center gap-2.5 transition-transform duration-300 hover:opacity-80">
-          <img src="/icon.svg" alt="CareerGen Logo" className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" />
-          <span className="text-[1.05rem] font-bold tracking-tight text-neutral-900">CareerGen</span>
+          <img src="/icon.svg" alt="Karivio Logo" className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" />
+          <span className="text-[1.05rem] font-bold tracking-tight text-neutral-900">Karivio</span>
         </Link>
 
         {/* Desktop Menu */}
@@ -111,6 +111,9 @@ export default function Navbar() {
             </Link>
             <Link href="/app" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
               Create CV
+            </Link>
+            <Link href="/ats-checker" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
+              ATS Checker
             </Link>
             {userProfile && (
               <Link href="/history" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
