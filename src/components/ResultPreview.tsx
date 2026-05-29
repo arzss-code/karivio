@@ -1,18 +1,39 @@
 'use client';
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { generationState } from '../lib/store';
-import { FileText, Loader2, Download, Settings2, Printer } from 'lucide-react';
+import { generationState, updateGenerationResultField } from '../lib/store';
+import { FileText, Loader2, Download, Settings2, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
 import { generatePDF } from '../lib/pdf-generator';
+import EditableField from './EditableField';
+import ClassicHTML from './templates/cv/ClassicHTML';
+import ModernHTML from './templates/cv/ModernHTML';
+import MinimalHTML from './templates/cv/MinimalHTML';
 
 export default function ResultPreview() {
   const state = useStore(generationState);
   const [template, setTemplate] = useState('classic');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [zoom, setZoom] = useState(0.7);
+  const [zoomText, setZoomText] = useState("70");
 
-  const handlePrint = () => {
-    window.print();
+  React.useEffect(() => {
+    setZoomText(Math.round(zoom * 100).toString());
+  }, [zoom]);
+
+  const handleZoomSubmit = () => {
+    const val = parseInt(zoomText.replace(/\D/g, ''));
+    if (!isNaN(val)) {
+      setZoom(Math.max(0.2, Math.min(val / 100, 3)));
+    } else {
+      setZoomText(Math.round(zoom * 100).toString());
+    }
   };
+
+  const handleZoomIn = () => setZoom(z => Math.min(z + 0.1, 3));
+  const handleZoomOut = () => setZoom(z => Math.max(z - 0.1, 0.2));
+  const handleZoomReset = () => setZoom(1);
+
+
 
   const handleDirectDownload = async () => {
     if (!state.result) return;
@@ -21,7 +42,7 @@ export default function ResultPreview() {
       await generatePDF({
         content: state.result,
         type: (state.type ?? 'cv') as import('../lib/pdf-generator').ContentType,
-        template: 'classic',
+        template: template as any,
         fallbackName: 'My_Document'
       });
     } catch (error) {
@@ -69,238 +90,20 @@ export default function ResultPreview() {
   );
 
   const renderCV = (data: any) => {
-    // Safety guard: if data is not a plain object (e.g. pdfmake internal), abort
-    if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
-    // Check for pdfmake leak (objects with _inlines keys)
-    if ('_inlines' in data || 'content' in data) return null;
-
-    const { header, summary, experience, education, projects, skills, achievements, certifications } = data;
-
-    return (
-      <div className="cv-document">
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          .cv-document {
-            font-family: 'Times New Roman', Times, serif;
-            color: #000;
-            line-height: 1.4;
-            font-size: 11pt;
-          }
-          .cv-header {
-            text-align: center;
-            margin-bottom: 16px;
-          }
-          .cv-name {
-            font-size: 24pt;
-            font-weight: bold;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-          }
-          .cv-contact {
-            font-size: 10pt;
-            color: #333;
-          }
-          .cv-section-title {
-            font-size: 12pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-bottom: 1px solid #000;
-            margin-top: 16px;
-            margin-bottom: 8px;
-            padding-bottom: 2px;
-          }
-          .cv-item {
-            margin-bottom: 12px;
-          }
-          .cv-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 4px;
-          }
-          .cv-item-title {
-            font-weight: bold;
-          }
-          .cv-item-subtitle {
-            font-style: italic;
-          }
-          .cv-item-date {
-            white-space: nowrap;
-            font-size: 10pt;
-          }
-          .cv-bullets {
-            margin: 0;
-            padding-left: 18px;
-            text-align: justify;
-          }
-          .cv-bullets li {
-            margin-bottom: 4px;
-          }
-          .cv-skills-text {
-            line-height: 1.6;
-          }
-          .cv-summary {
-            text-align: justify;
-          }
-          .cv-edu-meta {
-            font-size: 10pt;
-            color: #444;
-            margin-top: 2px;
-          }
-          
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .print-container, .print-container * {
-              visibility: visible;
-            }
-            .print-container {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              padding: 0;
-              margin: 0;
-              background: white;
-              box-shadow: none;
-              border: none;
-            }
-            @page {
-              margin: 2cm;
-              size: A4;
-            }
-          }
-        `}} />
-
-        {header && (
-          <div className="cv-header">
-            <div className="cv-name">{typeof header.name === 'string' ? header.name : ''}</div>
-            <div className="cv-contact">
-              {[header.email, header.phone, header.linkedin].filter(v => typeof v === 'string' && v).join('  |  ')}
-            </div>
-          </div>
-        )}
-
-        {summary && typeof summary === 'string' && (
-          <>
-            <div className="cv-section-title">Professional Summary</div>
-            <div className="cv-summary">{summary}</div>
-          </>
-        )}
-
-        {experience && Array.isArray(experience) && experience.length > 0 && (
-          <>
-            <div className="cv-section-title">Professional Experience</div>
-            {experience.map((exp: any, i: number) => (
-              <div key={i} className="cv-item">
-                <div className="cv-item-header">
-                  <div>
-                    <span className="cv-item-title">{typeof exp.title === 'string' ? exp.title : ''}</span>,{' '}
-                    <span className="cv-item-subtitle">{typeof exp.company === 'string' ? exp.company : ''}</span>
-                  </div>
-                  <div className="cv-item-date">{typeof exp.date === 'string' ? exp.date : ''}</div>
-                </div>
-                {Array.isArray(exp.description) && (
-                  <ul className="cv-bullets">
-                    {exp.description.map((b: any, j: number) => (
-                      typeof b === 'string' ? <li key={j}>{b}</li> : null
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-
-        {projects && Array.isArray(projects) && projects.length > 0 && (
-          <>
-            <div className="cv-section-title">Projects</div>
-            {projects.map((proj: any, i: number) => (
-              <div key={i} className="cv-item">
-                <div className="cv-item-header">
-                  <span className="cv-item-title">{typeof proj.name === 'string' ? proj.name : ''}</span>
-                </div>
-                {typeof proj.description === 'string' && proj.description && (
-                  <div className="cv-item-subtitle mb-1" style={{ fontSize: '10pt' }}>{proj.description}</div>
-                )}
-                {Array.isArray(proj.details) && (
-                  <ul className="cv-bullets">
-                    {proj.details.map((b: any, j: number) => (
-                      typeof b === 'string' ? <li key={j}>{b}</li> : null
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-
-        {education && Array.isArray(education) && education.length > 0 && (
-          <>
-            <div className="cv-section-title">Education</div>
-            {education.map((edu: any, i: number) => (
-              <div key={i} className="cv-item" style={{ marginBottom: '6px' }}>
-                <div className="cv-item-header">
-                  <div>
-                    <span className="cv-item-title">{typeof edu.degree === 'string' ? edu.degree : ''}</span>,{' '}
-                    <span className="cv-item-subtitle">{typeof edu.institution === 'string' ? edu.institution : ''}</span>
-                  </div>
-                  <div className="cv-item-date">{typeof edu.date === 'string' ? edu.date : ''}</div>
-                </div>
-                {(edu.gpa || edu.description) && (
-                  <div className="cv-edu-meta">
-                    {typeof edu.gpa === 'string' && edu.gpa && <span>GPA: {edu.gpa}{edu.description ? '  |  ' : ''}</span>}
-                    {typeof edu.description === 'string' && edu.description && <span>{edu.description}</span>}
-                  </div>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-
-        {achievements && Array.isArray(achievements) && achievements.length > 0 && (
-          <>
-            <div className="cv-section-title">Achievements</div>
-            <ul className="cv-bullets">
-              {achievements.map((a: any, i: number) => (
-                typeof a === 'string' ? <li key={i}>{a}</li> : null
-              ))}
-            </ul>
-          </>
-        )}
-
-        {certifications && Array.isArray(certifications) && certifications.length > 0 && (
-          <>
-            <div className="cv-section-title">Certifications</div>
-            {certifications.map((cert: any, i: number) => {
-              if (typeof cert === 'string') return <div key={i} style={{ marginBottom: 4 }}>{cert}</div>;
-              return (
-                <div key={i} style={{ marginBottom: 4 }}>
-                  <span className="cv-item-title">{typeof cert.name === 'string' ? cert.name : ''}</span>
-                  {cert.issuer && typeof cert.issuer === 'string' && <span> — {cert.issuer}</span>}
-                  {cert.date && typeof cert.date === 'string' && <span className="cv-item-date"> ({cert.date})</span>}
-                </div>
-              );
-            })}
-          </>
-        )}
-
-        {skills && Array.isArray(skills) && skills.length > 0 && (
-          <>
-            <div className="cv-section-title">Skills</div>
-            <div className="cv-skills-text">
-              {skills.filter((s: any) => typeof s === 'string').join(' • ')}
-            </div>
-          </>
-        )}
-      </div>
-    );
+    switch (template) {
+      case 'modern':
+        return <ModernHTML data={data} />;
+      case 'minimal':
+        return <MinimalHTML data={data} />;
+      case 'classic':
+      default:
+        return <ClassicHTML data={data} />;
+    }
   };
 
   const renderCoverLetter = (text: string) => {
     return (
-      <div className="cl-content whitespace-pre-wrap leading-relaxed text-neutral-900" style={{ fontFamily: "'Times New Roman', Times, serif", fontSize: '11pt' }}>
+      <div className="cl-content whitespace-pre-wrap leading-relaxed text-neutral-900" style={{ fontFamily: "'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: '11pt', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
         <style dangerouslySetInnerHTML={{
           __html: `
           @media print {
@@ -327,7 +130,12 @@ export default function ResultPreview() {
             }
           }
         `}} />
-        {text}
+        <EditableField
+          value={text}
+          onChange={(val) => updateGenerationResultField([], val)}
+          multiline
+          className="block w-full min-h-[500px]"
+        />
       </div>
     );
   };
@@ -336,29 +144,24 @@ export default function ResultPreview() {
     if (!state.result) return null;
 
     return (
-      <div className="animate-scale-in flex flex-col h-full lg:max-h-[calc(100vh-8rem)] rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
+      <div className="animate-scale-in flex flex-col h-full lg:h-[calc(100vh-1rem)] rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden relative">
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-6 py-4 bg-neutral-50 shrink-0">
-          <div className="relative hidden sm:block">
+          <div className="relative w-full sm:w-auto">
             <select
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
-              className="rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
+              className="w-full sm:w-auto rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
             >
-              <option value="classic">Harvard ATS Template</option>
+              <option value="classic">Classic ATS Template</option>
+              <option value="modern">Modern Clean ATS</option>
+              <option value="minimal">Minimal Compact ATS</option>
             </select>
             <Settings2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={handlePrint}
-              className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-white border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 transition-colors"
-            >
-              <Printer className="h-4 w-4" />
-              Print
-            </button>
             <button
               onClick={handleDirectDownload}
               disabled={isDownloading}
@@ -370,17 +173,73 @@ export default function ResultPreview() {
           </div>
         </div>
 
-        {/* Document Preview Area */}
-        <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-neutral-100/50 flex justify-center">
-          <div
-            className="print-container bg-white shadow-md border border-neutral-200 w-full"
-            style={{
-              maxWidth: '210mm',
-              minHeight: '297mm',
-              padding: '40px 50px'
-            }}
-          >
-            {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
+        {/* Document Preview Wrapper */}
+        <div className="relative flex-1 flex flex-col min-h-0 bg-neutral-200/80">
+          {/* Floating Zoom Controls */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-0.5 bg-white/90 backdrop-blur-md border border-neutral-200/80 rounded-full px-1.5 py-1 shadow-lg animate-fade-in">
+            <button onClick={handleZoomOut} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Zoom Out">
+              <ZoomOut className="h-3.5 w-3.5" />
+            </button>
+            <div className="flex items-center justify-center min-w-[2.75rem]">
+              <input
+                type="text"
+                className="text-[11px] font-bold text-neutral-700 w-6 text-right bg-transparent border-none focus:ring-0 p-0 m-0 outline-none"
+                value={zoomText}
+                onChange={(e) => setZoomText(e.target.value)}
+                onBlur={handleZoomSubmit}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleZoomSubmit(); }}
+              />
+              <span className="text-[11px] font-bold text-neutral-700">%</span>
+            </div>
+            <button onClick={handleZoomIn} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Zoom In">
+              <ZoomIn className="h-3.5 w-3.5" />
+            </button>
+            <div className="w-px h-4 bg-neutral-200 mx-1"></div>
+            <button onClick={handleZoomReset} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Full Zoom">
+              <Maximize className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Document Preview Area */}
+          <div className="flex-1 overflow-auto" style={{ padding: '2rem 2rem 3rem 2rem' }}>
+            <div
+              className="print-container bg-white shadow-xl relative transition-all duration-200"
+              style={{
+                width: '210mm',
+                minWidth: '210mm',
+                minHeight: '297mm',
+                zoom: zoom,
+                margin: '0 auto',
+              } as React.CSSProperties}
+            >
+              {/* Visual Page Break Indicator */}
+              <div
+                className="absolute inset-0 pointer-events-none print:hidden"
+                style={{
+                  backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 297mm, #cbd5e1 297mm, #cbd5e1 calc(297mm + 2px))',
+                  zIndex: 10
+                }}
+              />
+              {/* Page number labels */}
+              <div
+                className="absolute inset-y-0 right-0 w-8 pointer-events-none print:hidden overflow-hidden"
+                style={{ zIndex: 11 }}
+              >
+                {[...Array(10)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute right-2 text-[10px] font-bold text-slate-400"
+                    style={{ top: `calc(${i * 297}mm + 10px)` }}
+                  >
+                    P{i + 1}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ padding: '53px 66px' }}>
+                {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
