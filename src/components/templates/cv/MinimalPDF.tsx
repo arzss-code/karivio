@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
   },
   bullets: {
-    marginLeft: 10.5,
+    marginLeft: 4,
   },
   bulletItem: {
     flexDirection: 'row',

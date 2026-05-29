@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   bullets: {
-    marginLeft: 12,
+    marginLeft: 4,
   },
   bulletItem: {
     flexDirection: 'row',
