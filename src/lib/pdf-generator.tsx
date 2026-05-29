@@ -4,6 +4,9 @@ import { Document, Page, Text, View, StyleSheet, pdf, Font } from '@react-pdf/re
 // Register standard fonts explicitly just in case
 // @react-pdf/renderer uses standard 14 fonts natively.
 // We can use them directly by name.
+import ClassicPDF from '../components/templates/cv/ClassicPDF';
+import ModernPDF from '../components/templates/cv/ModernPDF';
+import MinimalPDF from '../components/templates/cv/MinimalPDF';
 
 export type TemplateType = 'classic' | 'modern' | 'minimal';
 export type ContentType = 'cv' | 'cover-letter';
@@ -115,157 +118,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const ClassicCV = ({ data }: { data: any }) => {
-  const { header, summary, experience, education, projects, skills, achievements, certifications } = data;
-
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        
-        {header && (
-          <View style={styles.header}>
-            <Text style={styles.name}>{typeof header.name === 'string' ? header.name : ''}</Text>
-            <Text style={styles.contact}>
-              {[header.email, header.phone, header.linkedin].filter(v => typeof v === 'string' && v).join('  |  ')}
-            </Text>
-          </View>
-        )}
-
-        {summary && typeof summary === 'string' && (
-          <View wrap={false}>
-            <Text style={styles.sectionTitle}>Professional Summary</Text>
-            <Text style={styles.summary}>{summary}</Text>
-          </View>
-        )}
-
-        {experience && Array.isArray(experience) && experience.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle}>Professional Experience</Text>
-            {experience.map((exp: any, i: number) => (
-              <View key={i} style={styles.item} wrap={false}>
-                <View style={styles.itemHeader}>
-                  <View style={styles.itemTitleContainer}>
-                    <Text style={styles.itemTitle}>{typeof exp.title === 'string' ? exp.title : ''}</Text>
-                    {exp.company && <Text>, <Text style={styles.itemSubtitle}>{exp.company}</Text></Text>}
-                  </View>
-                  <Text style={styles.itemDate}>{typeof exp.date === 'string' ? exp.date : ''}</Text>
-                </View>
-                {Array.isArray(exp.description) && (
-                  <View style={styles.bullets}>
-                    {exp.description.map((b: any, j: number) => (
-                      typeof b === 'string' ? (
-                        <View key={j} style={styles.bulletItem}>
-                          <Text style={styles.bulletPoint}>•</Text>
-                          <Text style={styles.bulletText}>{b}</Text>
-                        </View>
-                      ) : null
-                    ))}
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {projects && Array.isArray(projects) && projects.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle}>Projects</Text>
-            {projects.map((proj: any, i: number) => (
-              <View key={i} style={styles.item} wrap={false}>
-                <View style={styles.itemHeader}>
-                  <Text style={styles.itemTitle}>{typeof proj.name === 'string' ? proj.name : ''}</Text>
-                </View>
-                {typeof proj.description === 'string' && proj.description && (
-                  <Text style={[styles.itemSubtitle, { fontSize: 10, marginBottom: 4 }]}>{proj.description}</Text>
-                )}
-                {Array.isArray(proj.details) && (
-                  <View style={styles.bullets}>
-                    {proj.details.map((b: any, j: number) => (
-                      typeof b === 'string' ? (
-                        <View key={j} style={styles.bulletItem}>
-                          <Text style={styles.bulletPoint}>•</Text>
-                          <Text style={styles.bulletText}>{b}</Text>
-                        </View>
-                      ) : null
-                    ))}
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {education && Array.isArray(education) && education.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle}>Education</Text>
-            {education.map((edu: any, i: number) => (
-              <View key={i} style={{ marginBottom: 6 }} wrap={false}>
-                <View style={styles.itemHeader}>
-                  <View style={styles.itemTitleContainer}>
-                    <Text style={styles.itemTitle}>{typeof edu.degree === 'string' ? edu.degree : ''}</Text>
-                    {edu.institution && <Text>, <Text style={styles.itemSubtitle}>{edu.institution}</Text></Text>}
-                  </View>
-                  <Text style={styles.itemDate}>{typeof edu.date === 'string' ? edu.date : ''}</Text>
-                </View>
-                {(edu.gpa || edu.description) && (
-                  <View style={styles.eduMeta}>
-                    {typeof edu.gpa === 'string' && edu.gpa && <Text>GPA: {edu.gpa}{edu.description ? '  |  ' : ''}</Text>}
-                    {typeof edu.description === 'string' && edu.description && <Text>{edu.description}</Text>}
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {achievements && Array.isArray(achievements) && achievements.length > 0 && (
-          <View wrap={false}>
-            <Text style={styles.sectionTitle}>Achievements</Text>
-            <View style={styles.bullets}>
-              {achievements.map((a: any, i: number) => (
-                typeof a === 'string' ? (
-                  <View key={i} style={styles.bulletItem}>
-                    <Text style={styles.bulletPoint}>•</Text>
-                    <Text style={styles.bulletText}>{a}</Text>
-                  </View>
-                ) : null
-              ))}
-            </View>
-          </View>
-        )}
-
-        {certifications && Array.isArray(certifications) && certifications.length > 0 && (
-          <View wrap={false}>
-            <Text style={styles.sectionTitle}>Certifications</Text>
-            {certifications.map((cert: any, i: number) => {
-              if (typeof cert === 'string') {
-                return <Text key={i} style={{ marginBottom: 4 }}>{cert}</Text>;
-              }
-              return (
-                <Text key={i} style={{ marginBottom: 4 }}>
-                  <Text style={styles.itemTitle}>{typeof cert.name === 'string' ? cert.name : ''}</Text>
-                  {cert.issuer && typeof cert.issuer === 'string' && <Text> — {cert.issuer}</Text>}
-                  {cert.date && typeof cert.date === 'string' && <Text style={styles.itemDate}> ({cert.date})</Text>}
-                </Text>
-              );
-            })}
-          </View>
-        )}
-
-        {skills && Array.isArray(skills) && skills.length > 0 && (
-          <View wrap={false}>
-            <Text style={styles.sectionTitle}>Skills</Text>
-            <Text style={styles.skillsText}>
-              {skills.filter((s: any) => typeof s === 'string').join(' • ')}
-            </Text>
-          </View>
-        )}
-
-      </Page>
-    </Document>
-  );
-};
-
 const CoverLetter = ({ data, name }: { data: string; name?: string }) => {
   const lines = data.split('\n').filter(line => line.trim() !== '');
 
@@ -285,7 +137,18 @@ const CoverLetter = ({ data, name }: { data: string; name?: string }) => {
 export async function generatePDF(data: PDFData): Promise<void> {
   let doc;
   if (data.type === 'cv') {
-    doc = <ClassicCV data={data.content} />;
+    switch (data.template) {
+      case 'modern':
+        doc = <Document><ModernPDF data={data.content} /></Document>;
+        break;
+      case 'minimal':
+        doc = <Document><MinimalPDF data={data.content} /></Document>;
+        break;
+      case 'classic':
+      default:
+        doc = <Document><ClassicPDF data={data.content} /></Document>;
+        break;
+    }
   } else {
     doc = <CoverLetter data={typeof data.content === 'string' ? data.content : JSON.stringify(data.content)} name={data.fallbackName} />;
   }

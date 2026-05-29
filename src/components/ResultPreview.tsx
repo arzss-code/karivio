@@ -2,18 +2,38 @@
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { generationState, updateGenerationResultField } from '../lib/store';
-import { FileText, Loader2, Download, Settings2, Printer } from 'lucide-react';
+import { FileText, Loader2, Download, Settings2, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
 import { generatePDF } from '../lib/pdf-generator';
 import EditableField from './EditableField';
+import ClassicHTML from './templates/cv/ClassicHTML';
+import ModernHTML from './templates/cv/ModernHTML';
+import MinimalHTML from './templates/cv/MinimalHTML';
 
 export default function ResultPreview() {
   const state = useStore(generationState);
   const [template, setTemplate] = useState('classic');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [zoom, setZoom] = useState(0.7);
+  const [zoomText, setZoomText] = useState("70");
 
-  const handlePrint = () => {
-    window.print();
+  React.useEffect(() => {
+    setZoomText(Math.round(zoom * 100).toString());
+  }, [zoom]);
+
+  const handleZoomSubmit = () => {
+    const val = parseInt(zoomText.replace(/\D/g, ''));
+    if (!isNaN(val)) {
+      setZoom(Math.max(0.2, Math.min(val / 100, 3)));
+    } else {
+      setZoomText(Math.round(zoom * 100).toString());
+    }
   };
+
+  const handleZoomIn = () => setZoom(z => Math.min(z + 0.1, 3));
+  const handleZoomOut = () => setZoom(z => Math.max(z - 0.1, 0.2));
+  const handleZoomReset = () => setZoom(1);
+
+
 
   const handleDirectDownload = async () => {
     if (!state.result) return;
@@ -22,7 +42,7 @@ export default function ResultPreview() {
       await generatePDF({
         content: state.result,
         type: (state.type ?? 'cv') as import('../lib/pdf-generator').ContentType,
-        template: 'classic',
+        template: template as any,
         fallbackName: 'My_Document'
       });
     } catch (error) {
@@ -70,303 +90,15 @@ export default function ResultPreview() {
   );
 
   const renderCV = (data: any) => {
-    // Safety guard: if data is not a plain object (e.g. pdfmake internal), abort
-    if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
-    // Check for pdfmake leak (objects with _inlines keys)
-    if ('_inlines' in data || 'content' in data) return null;
-
-    const { header, summary, experience, education, projects, skills, achievements, certifications } = data;
-
-    return (
-      <div className="cv-document">
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          .cv-document {
-            font-family: 'Times', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #000;
-            line-height: 1.4;
-            font-size: 11pt;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-          }
-          .cv-header {
-            text-align: center;
-            margin-bottom: 16px;
-          }
-          .cv-name {
-            font-size: 24pt;
-            font-weight: bold;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-          }
-          .cv-contact {
-            font-size: 10pt;
-            color: #333;
-          }
-          .cv-section-title {
-            font-size: 12pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-bottom: 1px solid #000;
-            margin-top: 16px;
-            margin-bottom: 8px;
-            padding-bottom: 2px;
-            page-break-after: avoid;
-            break-after: avoid;
-          }
-          .cv-item {
-            margin-bottom: 12px;
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
-          .cv-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 4px;
-          }
-          .cv-item-title {
-            font-weight: bold;
-          }
-          .cv-item-subtitle {
-            font-style: italic;
-          }
-          .cv-item-date {
-            white-space: nowrap;
-            font-size: 10pt;
-          }
-          .cv-bullets {
-            margin: 0;
-            padding-left: 18px;
-            text-align: justify;
-          }
-          .cv-bullets li {
-            margin-bottom: 4px;
-          }
-          .cv-skills-text {
-            line-height: 1.6;
-          }
-          .cv-summary {
-            text-align: justify;
-          }
-          .cv-edu-meta {
-            font-size: 10pt;
-            color: #444;
-            margin-top: 2px;
-          }
-          
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .print-container, .print-container * {
-              visibility: visible;
-            }
-            .print-container {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              padding: 0;
-              margin: 0;
-              background: white;
-              box-shadow: none;
-              border: none;
-            }
-            @page {
-              margin: 2cm;
-              size: A4;
-            }
-          }
-        `}} />
-
-        {header && (
-          <div className="cv-header">
-            <div className="cv-name">
-              <EditableField
-                value={typeof header.name === 'string' ? header.name : ''}
-                onChange={(val) => updateGenerationResultField(['header', 'name'], val)}
-                placeholder="Your Name"
-              />
-            </div>
-            <div className="cv-contact flex justify-center gap-2 items-center flex-wrap">
-              <EditableField value={typeof header.email === 'string' ? header.email : ''} onChange={(val) => updateGenerationResultField(['header', 'email'], val)} placeholder="Email" /> |
-              <EditableField value={typeof header.phone === 'string' ? header.phone : ''} onChange={(val) => updateGenerationResultField(['header', 'phone'], val)} placeholder="Phone" /> |
-              <EditableField value={typeof header.linkedin === 'string' ? header.linkedin : ''} onChange={(val) => updateGenerationResultField(['header', 'linkedin'], val)} placeholder="LinkedIn" />
-            </div>
-          </div>
-        )}
-
-        {summary && typeof summary === 'string' && (
-          <>
-            <div className="cv-section-title">Professional Summary</div>
-            <div className="cv-summary">
-              <EditableField value={summary} onChange={(val) => updateGenerationResultField(['summary'], val)} multiline />
-            </div>
-          </>
-        )}
-
-        {experience && Array.isArray(experience) && experience.length > 0 && (
-          <>
-            <div className="cv-section-title">Professional Experience</div>
-            {experience.map((exp: any, i: number) => (
-              <div key={i} className="cv-item">
-                <div className="cv-item-header flex-wrap">
-                  <div>
-                    <span className="cv-item-title">
-                      <EditableField value={typeof exp.title === 'string' ? exp.title : ''} onChange={(val) => updateGenerationResultField(['experience', i, 'title'], val)} placeholder="Job Title" />
-                    </span>,{' '}
-                    <span className="cv-item-subtitle">
-                      <EditableField value={typeof exp.company === 'string' ? exp.company : ''} onChange={(val) => updateGenerationResultField(['experience', i, 'company'], val)} placeholder="Company" />
-                    </span>
-                  </div>
-                  <div className="cv-item-date">
-                    <EditableField value={typeof exp.date === 'string' ? exp.date : ''} onChange={(val) => updateGenerationResultField(['experience', i, 'date'], val)} placeholder="Date" />
-                  </div>
-                </div>
-                {Array.isArray(exp.description) && (
-                  <ul className="cv-bullets">
-                    {exp.description.map((b: any, j: number) => (
-                      typeof b === 'string' ? (
-                        <li key={j}>
-                          <EditableField value={b} onChange={(val) => updateGenerationResultField(['experience', i, 'description', j], val)} multiline />
-                        </li>
-                      ) : null
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-
-        {projects && Array.isArray(projects) && projects.length > 0 && (
-          <>
-            <div className="cv-section-title">Projects</div>
-            {projects.map((proj: any, i: number) => (
-              <div key={i} className="cv-item">
-                <div className="cv-item-header">
-                  <span className="cv-item-title">
-                    <EditableField value={typeof proj.name === 'string' ? proj.name : ''} onChange={(val) => updateGenerationResultField(['projects', i, 'name'], val)} placeholder="Project Name" />
-                  </span>
-                </div>
-                {typeof proj.description === 'string' && proj.description && (
-                  <div className="cv-item-subtitle mb-1" style={{ fontSize: '10pt' }}>
-                    <EditableField value={proj.description} onChange={(val) => updateGenerationResultField(['projects', i, 'description'], val)} multiline />
-                  </div>
-                )}
-                {Array.isArray(proj.details) && (
-                  <ul className="cv-bullets">
-                    {proj.details.map((b: any, j: number) => (
-                      typeof b === 'string' ? (
-                        <li key={j}>
-                          <EditableField value={b} onChange={(val) => updateGenerationResultField(['projects', i, 'details', j], val)} multiline />
-                        </li>
-                      ) : null
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-
-        {education && Array.isArray(education) && education.length > 0 && (
-          <>
-            <div className="cv-section-title">Education</div>
-            {education.map((edu: any, i: number) => (
-              <div key={i} className="cv-item" style={{ marginBottom: '6px' }}>
-                <div className="cv-item-header flex-wrap">
-                  <div>
-                    <span className="cv-item-title">
-                      <EditableField value={typeof edu.degree === 'string' ? edu.degree : ''} onChange={(val) => updateGenerationResultField(['education', i, 'degree'], val)} placeholder="Degree" />
-                    </span>,{' '}
-                    <span className="cv-item-subtitle">
-                      <EditableField value={typeof edu.institution === 'string' ? edu.institution : ''} onChange={(val) => updateGenerationResultField(['education', i, 'institution'], val)} placeholder="Institution" />
-                    </span>
-                  </div>
-                  <div className="cv-item-date">
-                    <EditableField value={typeof edu.date === 'string' ? edu.date : ''} onChange={(val) => updateGenerationResultField(['education', i, 'date'], val)} placeholder="Date" />
-                  </div>
-                </div>
-                {(edu.gpa || edu.description) && (
-                  <div className="cv-edu-meta flex flex-wrap gap-2">
-                    {typeof edu.gpa === 'string' && edu.gpa && (
-                      <span>GPA: <EditableField value={edu.gpa} onChange={(val) => updateGenerationResultField(['education', i, 'gpa'], val)} placeholder="GPA" />{edu.description ? '  |  ' : ''}</span>
-                    )}
-                    {typeof edu.description === 'string' && edu.description && (
-                      <span>
-                        <EditableField value={edu.description} onChange={(val) => updateGenerationResultField(['education', i, 'description'], val)} />
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-
-        {achievements && Array.isArray(achievements) && achievements.length > 0 && (
-          <>
-            <div className="cv-section-title">Achievements</div>
-            <ul className="cv-bullets">
-              {achievements.map((a: any, i: number) => (
-                typeof a === 'string' ? (
-                  <li key={i}>
-                    <EditableField value={a} onChange={(val) => updateGenerationResultField(['achievements', i], val)} multiline />
-                  </li>
-                ) : null
-              ))}
-            </ul>
-          </>
-        )}
-
-        {certifications && Array.isArray(certifications) && certifications.length > 0 && (
-          <>
-            <div className="cv-section-title">Certifications</div>
-            {certifications.map((cert: any, i: number) => {
-              if (typeof cert === 'string') {
-                return (
-                  <div key={i} style={{ marginBottom: 4 }}>
-                    <EditableField value={cert} onChange={(val) => updateGenerationResultField(['certifications', i], val)} />
-                  </div>
-                );
-              }
-              return (
-                <div key={i} style={{ marginBottom: 4 }} className="page-break-inside-avoid">
-                  <span className="cv-item-title">
-                    <EditableField value={typeof cert.name === 'string' ? cert.name : ''} onChange={(val) => updateGenerationResultField(['certifications', i, 'name'], val)} placeholder="Certification Name" />
-                  </span>
-                  {cert.issuer && typeof cert.issuer === 'string' && (
-                    <span> — <EditableField value={cert.issuer} onChange={(val) => updateGenerationResultField(['certifications', i, 'issuer'], val)} placeholder="Issuer" /></span>
-                  )}
-                  {cert.date && typeof cert.date === 'string' && (
-                    <span className="cv-item-date"> (<EditableField value={cert.date} onChange={(val) => updateGenerationResultField(['certifications', i, 'date'], val)} placeholder="Date" />)</span>
-                  )}
-                </div>
-              );
-            })}
-          </>
-        )}
-
-        {skills && Array.isArray(skills) && skills.length > 0 && (
-          <>
-            <div className="cv-section-title">Skills</div>
-            <div className="cv-skills-text">
-              {/* To make comma-separated skills editable individually, we map them */}
-              {skills.map((s: any, i: number) => (
-                <React.Fragment key={i}>
-                  {typeof s === 'string' ? (
-                    <EditableField value={s} onChange={(val) => updateGenerationResultField(['skills', i], val)} />
-                  ) : null}
-                  {i < skills.length - 1 ? <span className="mx-1">•</span> : null}
-                </React.Fragment>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    );
+    switch (template) {
+      case 'modern':
+        return <ModernHTML data={data} />;
+      case 'minimal':
+        return <MinimalHTML data={data} />;
+      case 'classic':
+      default:
+        return <ClassicHTML data={data} />;
+    }
   };
 
   const renderCoverLetter = (text: string) => {
@@ -412,29 +144,24 @@ export default function ResultPreview() {
     if (!state.result) return null;
 
     return (
-      <div className="animate-scale-in flex flex-col h-full lg:max-h-[calc(100vh-8rem)] rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
+      <div className="animate-scale-in flex flex-col h-full lg:h-[calc(100vh-1rem)] rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden relative">
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-6 py-4 bg-neutral-50 shrink-0">
-          <div className="relative hidden sm:block">
+          <div className="relative w-full sm:w-auto">
             <select
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
-              className="rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
+              className="w-full sm:w-auto rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
             >
-              <option value="classic">Harvard ATS Template</option>
+              <option value="classic">Classic ATS Template</option>
+              <option value="modern">Modern Clean ATS</option>
+              <option value="minimal">Minimal Compact ATS</option>
             </select>
             <Settings2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={handlePrint}
-              className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-white border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 transition-colors"
-            >
-              <Printer className="h-4 w-4" />
-              Print
-            </button>
             <button
               onClick={handleDirectDownload}
               disabled={isDownloading}
@@ -446,17 +173,73 @@ export default function ResultPreview() {
           </div>
         </div>
 
-        {/* Document Preview Area */}
-        <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-neutral-100/50 flex justify-center">
-          <div
-            className="print-container bg-white shadow-md border border-neutral-200 w-full"
-            style={{
-              maxWidth: '210mm',
-              minHeight: '297mm',
-              padding: '40px 50px'
-            }}
-          >
-            {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
+        {/* Document Preview Wrapper */}
+        <div className="relative flex-1 flex flex-col min-h-0 bg-neutral-200/80">
+          {/* Floating Zoom Controls */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-0.5 bg-white/90 backdrop-blur-md border border-neutral-200/80 rounded-full px-1.5 py-1 shadow-lg animate-fade-in">
+            <button onClick={handleZoomOut} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Zoom Out">
+              <ZoomOut className="h-3.5 w-3.5" />
+            </button>
+            <div className="flex items-center justify-center min-w-[2.75rem]">
+              <input
+                type="text"
+                className="text-[11px] font-bold text-neutral-700 w-6 text-right bg-transparent border-none focus:ring-0 p-0 m-0 outline-none"
+                value={zoomText}
+                onChange={(e) => setZoomText(e.target.value)}
+                onBlur={handleZoomSubmit}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleZoomSubmit(); }}
+              />
+              <span className="text-[11px] font-bold text-neutral-700">%</span>
+            </div>
+            <button onClick={handleZoomIn} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Zoom In">
+              <ZoomIn className="h-3.5 w-3.5" />
+            </button>
+            <div className="w-px h-4 bg-neutral-200 mx-1"></div>
+            <button onClick={handleZoomReset} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Full Zoom">
+              <Maximize className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Document Preview Area */}
+          <div className="flex-1 overflow-auto" style={{ padding: '2rem 2rem 3rem 2rem' }}>
+            <div
+              className="print-container bg-white shadow-xl relative transition-all duration-200"
+              style={{
+                width: '210mm',
+                minWidth: '210mm',
+                minHeight: '297mm',
+                zoom: zoom,
+                margin: '0 auto',
+              } as React.CSSProperties}
+            >
+              {/* Visual Page Break Indicator */}
+              <div
+                className="absolute inset-0 pointer-events-none print:hidden"
+                style={{
+                  backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 297mm, #cbd5e1 297mm, #cbd5e1 calc(297mm + 2px))',
+                  zIndex: 10
+                }}
+              />
+              {/* Page number labels */}
+              <div
+                className="absolute inset-y-0 right-0 w-8 pointer-events-none print:hidden overflow-hidden"
+                style={{ zIndex: 11 }}
+              >
+                {[...Array(10)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute right-2 text-[10px] font-bold text-slate-400"
+                    style={{ top: `calc(${i * 297}mm + 10px)` }}
+                  >
+                    P{i + 1}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ padding: '53px 66px' }}>
+                {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
