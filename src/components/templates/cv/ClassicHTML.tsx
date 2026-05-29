@@ -70,6 +70,7 @@ export default function ClassicHTML({ data }: { data: any }) {
           margin: 0;
           padding-left: 18px;
           text-align: justify;
+          list-style-type: disc;
         }
         .cv-bullets li {
           margin-bottom: 4px;

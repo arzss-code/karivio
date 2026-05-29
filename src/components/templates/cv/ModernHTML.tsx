@@ -79,6 +79,7 @@ export default function ModernHTML({ data }: { data: any }) {
           margin: 0;
           padding-left: 16px;
           text-align: justify;
+          list-style-type: disc;
         }
         .cv-bullets li {
           margin-bottom: 5px;

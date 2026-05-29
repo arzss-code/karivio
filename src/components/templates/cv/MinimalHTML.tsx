@@ -74,8 +74,9 @@ export default function MinimalHTML({ data }: { data: any }) {
         }
         .cv-bullets {
           margin: 0;
-          padding-left: 14px;
+          padding-left: 16px;
           text-align: justify;
+          list-style-type: disc;
         }
         .cv-bullets li {
           margin-bottom: 2px;
