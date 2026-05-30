@@ -8,7 +8,7 @@ export default function Footer() {
         </div>
 
         <p className="text-xs font-medium text-neutral-400">
-          &copy; {new Date().getFullYear()} Karivio. All rights reserved.
+          &copy; {new Date().getFullYear()} Karivio by Atsiila Arya Nabiih. All rights reserved.
         </p>
 
         <div className="text-xs font-medium text-neutral-400 flex items-center gap-1">

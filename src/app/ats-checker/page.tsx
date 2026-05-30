@@ -197,7 +197,7 @@ export default function AtsCheckerPage() {
     const timer = setTimeout(() => {
       const container = document.querySelector('.print-container');
       if (!container) return;
-      
+
       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
       let node;
       while ((node = walker.nextNode())) {
@@ -207,7 +207,7 @@ export default function AtsCheckerPage() {
           if (parent) {
             // Because of CSS columns (horizontal pagination), we scroll inline
             parent.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-            
+
             const originalBg = parent.style.backgroundColor;
             const originalTransition = parent.style.transition;
             parent.style.transition = 'background-color 0.3s ease';
@@ -517,7 +517,7 @@ export default function AtsCheckerPage() {
                     Target Job Description (Optional)
                   </label>
                   <textarea
-                    rows={3}
+                    rows={4}
                     className="w-full rounded-xl border border-neutral-200 bg-neutral-50 p-3 text-xs focus:border-neutral-400 focus:ring-0 resize-none"
                     placeholder="Paste the job posting here to get a specific Match Score..."
                     value={jobDescription}
