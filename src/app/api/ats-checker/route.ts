@@ -36,14 +36,14 @@ export async function POST(request: Request) {
 
     // Parse body
     const body = await request.json();
-    const { cvText, jobDescription } = body;
+    const { cvText, jobDescription, formatIssues = [] } = body;
 
     if (!cvText) {
       return NextResponse.json({ error: 'Missing CV content.' }, { status: 400 });
     }
 
     const systemInstruction = getAtsCheckerSystemInstruction();
-    const prompt = getAtsCheckerPrompt(cvText, jobDescription);
+    const prompt = getAtsCheckerPrompt(cvText, jobDescription, formatIssues);
 
     let rawJsonText = await generateContent(prompt, systemInstruction, 3, true);
 

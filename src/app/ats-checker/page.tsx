@@ -3,17 +3,26 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { generationState, setGenerationResult, atsHistoryState, setAtsHistory } from '@/lib/store';
-import { UploadCloud, FileText, Loader2, Target, Briefcase, Lightbulb, CheckCircle2, XCircle, AlertCircle, Save, RefreshCw } from 'lucide-react';
+import { UploadCloud, FileText, Loader2, Target, Briefcase, Lightbulb, CheckCircle2, XCircle, AlertCircle, Save, RefreshCw, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+import RewriteSuggestion from '@/components/ats/RewriteSuggestion';
+
 type AtsResult = {
   matchScore: number;
-  missingKeywords: string[];
+  formatScore: number;
+  impactScore: number;
+  missingKeywords: {
+    critical: string[];
+    important: string[];
+    optional: string[];
+  };
   strengths: string[];
   suggestions: string[];
+  weakSentences: string[];
   recommendedRoles: string[];
 };
 
@@ -26,6 +35,8 @@ export default function AtsCheckerPage() {
 
   const [cvText, setCvText] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [formatIssues, setFormatIssues] = useState<string[]>([]);
+  const [activeWeakSentence, setActiveWeakSentence] = useState<string | null>(null);
 
   const [isExtracting, setIsExtracting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -103,6 +114,8 @@ export default function AtsCheckerPage() {
       // Clear data when manually switching to upload tab, but only if we didn't just load from history.
       setCvText('');
       setResult(null);
+      setFormatIssues([]);
+      setActiveWeakSentence(null);
     }
   }, [source, storeState.result]);
 
@@ -133,6 +146,9 @@ export default function AtsCheckerPage() {
       if (!res.ok) throw new Error(data.error || 'Failed to extract text');
 
       setCvText(data.text);
+      if (data.formatIssues) {
+        setFormatIssues(data.formatIssues);
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to extract PDF text.');
       setPdfFile(null);
@@ -164,13 +180,14 @@ export default function AtsCheckerPage() {
       const res = await fetch('/api/ats-checker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cvText, jobDescription }),
+        body: JSON.stringify({ cvText, jobDescription, formatIssues }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to analyze CV');
 
       setResult(data.result);
+      setActiveWeakSentence(null);
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
@@ -329,47 +346,119 @@ export default function AtsCheckerPage() {
                 {result && (
                   <div className="animate-fade-in space-y-8 pt-4 border-t border-neutral-100">
 
-                    {/* Score */}
-                    <div className="flex items-center gap-6 bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100">
-                      <div className="relative h-24 w-24 flex shrink-0 items-center justify-center rounded-full bg-white shadow-sm border border-neutral-200">
-                        <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100">
-                          <circle
-                            cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="6"
-                            className={result.matchScore >= 80 ? "text-green-500" : result.matchScore >= 50 ? "text-yellow-500" : "text-red-500"}
-                            strokeDasharray={`${result.matchScore * 2.95} 295`} strokeLinecap="round"
-                          />
-                        </svg>
-                        <div className="flex flex-col items-center">
-                          <span className="text-3xl font-extrabold text-neutral-900">{result.matchScore}</span>
+                    {/* Scores */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Match Score */}
+                      <div className="flex flex-col items-center justify-center bg-neutral-50 p-4 rounded-2xl border border-neutral-100">
+                        <div className="relative h-16 w-16 flex items-center justify-center rounded-full bg-white shadow-sm border border-neutral-200 mb-2">
+                          <span className={`text-xl font-bold ${result.matchScore >= 80 ? "text-green-500" : result.matchScore >= 50 ? "text-yellow-500" : "text-red-500"}`}>
+                            {result.matchScore}
+                          </span>
                         </div>
+                        <h3 className="font-bold text-neutral-900 text-sm">Match Score</h3>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-neutral-900 text-lg">Match Score</h3>
-                        <p className="text-xs text-neutral-500 mt-1">
-                          {result.matchScore >= 80 ? 'Excellent match! You are highly competitive.' :
-                            result.matchScore >= 50 ? 'Good start. Add missing keywords to improve.' :
-                              'Low match. Consider heavily tailoring your resume.'}
-                        </p>
+                      
+                      {/* Format Score */}
+                      <div className="flex flex-col items-center justify-center bg-neutral-50 p-4 rounded-2xl border border-neutral-100">
+                        <div className="relative h-16 w-16 flex items-center justify-center rounded-full bg-white shadow-sm border border-neutral-200 mb-2">
+                          <span className={`text-xl font-bold ${result.formatScore >= 80 ? "text-green-500" : result.formatScore >= 50 ? "text-yellow-500" : "text-red-500"}`}>
+                            {result.formatScore}
+                          </span>
+                        </div>
+                        <h3 className="font-bold text-neutral-900 text-sm">Format Score</h3>
+                      </div>
+
+                      {/* Impact Score */}
+                      <div className="flex flex-col items-center justify-center bg-neutral-50 p-4 rounded-2xl border border-neutral-100">
+                        <div className="relative h-16 w-16 flex items-center justify-center rounded-full bg-white shadow-sm border border-neutral-200 mb-2">
+                          <span className={`text-xl font-bold ${result.impactScore >= 80 ? "text-green-500" : result.impactScore >= 50 ? "text-yellow-500" : "text-red-500"}`}>
+                            {result.impactScore}
+                          </span>
+                        </div>
+                        <h3 className="font-bold text-neutral-900 text-sm">Impact Score</h3>
                       </div>
                     </div>
+
+                    {/* Weak Sentences & Smart Rewrite */}
+                    {result.weakSentences && result.weakSentences.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-bold text-neutral-900 mb-3 flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-blue-500" /> Needs Improvement (Smart Rewrite)
+                        </h3>
+                        <div className="space-y-3">
+                          {result.weakSentences.map((sentence, idx) => (
+                            <div key={idx} className="relative rounded-lg border border-yellow-200 bg-yellow-50/50 p-3 text-xs text-neutral-800">
+                              <p className="mb-2 italic">"{sentence}"</p>
+                              <button
+                                onClick={() => setActiveWeakSentence(activeWeakSentence === sentence ? null : sentence)}
+                                className="inline-flex items-center gap-1.5 rounded bg-white px-2 py-1 text-[11px] font-semibold text-blue-600 shadow-sm border border-blue-100 hover:bg-blue-50 transition-colors"
+                              >
+                                <Sparkles className="h-3 w-3" />
+                                Fix with AI
+                              </button>
+
+                              {activeWeakSentence === sentence && (
+                                <RewriteSuggestion
+                                  sentence={sentence}
+                                  context={cvText}
+                                  onApply={(oldT, newT) => {
+                                    setCvText(prev => prev.replace(oldT, newT));
+                                    setActiveWeakSentence(null);
+                                    // Remove the fixed sentence from the list to show progress
+                                    setResult(prev => prev ? { ...prev, weakSentences: prev.weakSentences.filter(s => s !== sentence) } : prev);
+                                  }}
+                                  onDismiss={() => setActiveWeakSentence(null)}
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Keywords */}
                     <div>
                       <h3 className="text-sm font-bold text-neutral-900 mb-3 flex items-center gap-2">
                         <XCircle className="h-4 w-4 text-red-500" /> Missing Keywords
                       </h3>
-                      {result.missingKeywords.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {result.missingKeywords.map((kw, idx) => (
-                            <button
-                              key={idx}
-                              title="Copy to clipboard"
-                              onClick={() => navigator.clipboard.writeText(kw)}
-                              className="inline-flex items-center px-2 py-1 rounded bg-red-50 text-red-700 text-xs font-medium border border-red-100 hover:bg-red-100 transition-colors"
-                            >
-                              + {kw}
-                            </button>
-                          ))}
+                      {Object.entries(result.missingKeywords).some(([_, kws]) => kws.length > 0) ? (
+                        <div className="space-y-3">
+                          {result.missingKeywords.critical?.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-neutral-700 mb-1">Critical (Must Have)</p>
+                              <div className="flex flex-wrap gap-2">
+                                {result.missingKeywords.critical.map((kw, idx) => (
+                                  <span key={idx} className="inline-flex items-center px-2 py-1 rounded bg-red-50 text-red-700 text-xs font-medium border border-red-100">
+                                    {kw}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {result.missingKeywords.important?.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-neutral-700 mb-1">Important</p>
+                              <div className="flex flex-wrap gap-2">
+                                {result.missingKeywords.important.map((kw, idx) => (
+                                  <span key={idx} className="inline-flex items-center px-2 py-1 rounded bg-orange-50 text-orange-700 text-xs font-medium border border-orange-100">
+                                    {kw}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {result.missingKeywords.optional?.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-neutral-700 mb-1">Optional (Bonus)</p>
+                              <div className="flex flex-wrap gap-2">
+                                {result.missingKeywords.optional.map((kw, idx) => (
+                                  <span key={idx} className="inline-flex items-center px-2 py-1 rounded bg-yellow-50 text-yellow-700 text-xs font-medium border border-yellow-100">
+                                    {kw}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <p className="text-xs text-neutral-500 italic">No missing keywords detected!</p>

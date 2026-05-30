@@ -138,7 +138,7 @@ export function getAtsCheckerSystemInstruction(): string {
   return `You are an expert ATS (Applicant Tracking System) algorithm and senior technical recruiter. Your task is to analyze a candidate's resume (provided either as structured text or a PDF) and optionally compare it against a target Job Description. You provide brutal, honest, and highly actionable feedback. You ALWAYS output your response in valid JSON format.`;
 }
 
-export function getAtsCheckerPrompt(cvContent: string, jobDescription?: string): string {
+export function getAtsCheckerPrompt(cvContent: string, jobDescription?: string, formatIssues: string[] = []): string {
   const jdSection = jobDescription && jobDescription.trim().length > 10 
     ? `Target Job Description:\n${jobDescription}\n\nAnalyze the resume against this specific job description. Calculate a Match Score (0-100) based on keyword overlap, required experience, and skills.`
     : `Target Job Description: NONE PROVIDED\n\nSince no specific job description was provided, evaluate the resume based on general industry best practices, formatting, and clarity. Set matchScore to 0.`;
@@ -150,13 +150,29 @@ ${cvContent || "See attached document"}
 
 ${jdSection}
 
+Format Issues Identified by System:
+${formatIssues.length > 0 ? formatIssues.join('\n') : 'None'}
+
+Evaluate the resume based on the content above. Pay special attention to:
+1. Keyword match with the JD (if provided).
+2. The use of strong Action Verbs at the start of bullet points.
+3. The presence of quantitative metrics (numbers, %, $, duration) to measure impact.
+4. Any format issues reported above.
+
 Guidelines for the JSON output:
 1. The output MUST be a valid JSON object with the exact following structure:
 {
   "matchScore": number, // 0-100 if JD is provided, otherwise 0
-  "missingKeywords": ["keyword1", "keyword2"], // Important keywords from JD missing in the resume (or general missing skills if no JD)
+  "formatScore": number, // 0-100 evaluating standard headers and layout compliance (penalize if format issues are present)
+  "impactScore": number, // 0-100 evaluating the use of strong action verbs and quantitative metrics
+  "missingKeywords": {
+    "critical": ["keyword1"], // Must-have skills missing
+    "important": ["keyword2"], // Good-to-have skills missing
+    "optional": ["keyword3"]
+  },
   "strengths": ["strength1", "strength2"], // What the resume does well
   "suggestions": ["Actionable suggestion 1", "Actionable suggestion 2"], // specific ways to improve the resume
+  "weakSentences": ["Exact sentence from the resume that is weak"], // Array of exact sentences from the experience section that lack action verbs or metrics. These must be EXACT substring matches from the text so the UI can highlight them.
   "recommendedRoles": ["Role 1", "Role 2"] // 3-5 job titles that perfectly fit this resume's experience
 }
 2. Be highly critical but constructive.

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { generateContentWithPdf } from '@/lib/gemini';
 import { checkRateLimit } from '@/lib/rate-limiter';
 import { getSupabase } from '@/lib/supabase';
+import { parsePdfWithLayout } from '@/lib/pdf-parser';
 
 export async function POST(request: Request) {
   try {
-    // 1. Check Auth (Does not cost credits to just extract text, but requires login)
+    // 1. Check Auth
     const supabase = await getSupabase();
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -30,12 +30,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing PDF.' }, { status: 400 });
     }
 
-    const systemInstruction = 'You are an accurate OCR and text extraction tool. Your only job is to read the provided PDF and output its text exactly as it appears, structured cleanly with line breaks. Do not add any conversational text.';
-    const prompt = 'Extract all text from this PDF.';
+    // Convert Base64 to ArrayBuffer
+    const binaryString = atob(pdfBase64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const pdfBuffer = bytes.buffer;
 
-    const extractedText = await generateContentWithPdf(pdfBase64, prompt, systemInstruction, 3, false);
+    // Use our pdfjs-dist based parser
+    const parseResult = await parsePdfWithLayout(pdfBuffer);
 
-    return NextResponse.json({ text: extractedText });
+    return NextResponse.json({ 
+      text: parseResult.text,
+      formatIssues: parseResult.formatIssues,
+      hasMultipleColumns: parseResult.hasMultipleColumns
+    });
 
   } catch (error: any) {
     console.error('PDF Extraction Error:', error);
