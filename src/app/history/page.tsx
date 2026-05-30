@@ -36,7 +36,8 @@ function getDocTitle(doc: HistoryDoc): string {
 
 function getDocPreview(doc: HistoryDoc): string {
   if (doc.document_type === 'ats_check') {
-    const kw = doc.content?.missingKeywords?.length || 0;
+    const mk = doc.content?.missingKeywords;
+    const kw = mk ? (mk.critical?.length || 0) + (mk.important?.length || 0) + (mk.optional?.length || 0) : 0;
     const title = doc.content?.jobDescription ? 'Targeted JD' : 'General Check';
     return `Analysis: ${title} | Missing Keywords: ${kw}`;
   }

@@ -9,6 +9,7 @@ import EditableField from './EditableField';
 import ClassicHTML from './templates/cv/ClassicHTML';
 import ModernHTML from './templates/cv/ModernHTML';
 import MinimalHTML from './templates/cv/MinimalHTML';
+import PaginatedPreview from './PaginatedPreview';
 
 export default function ResultPreview() {
   const state = useStore(generationState);
@@ -211,45 +212,12 @@ export default function ResultPreview() {
           </div>
 
           {/* Document Preview Area */}
-          <div className="flex-1 overflow-auto" style={{ padding: '2rem 2rem 3rem 2rem' }}>
-            <div
-              className="print-container bg-white shadow-xl relative transition-all duration-200"
-              style={{
-                width: '210mm',
-                minWidth: '210mm',
-                minHeight: '297mm',
-                zoom: zoom,
-                margin: '0 auto',
-              } as React.CSSProperties}
-            >
-              {/* Visual Page Break Indicator */}
-              <div
-                className="absolute inset-0 pointer-events-none print:hidden"
-                style={{
-                  backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 297mm, #cbd5e1 297mm, #cbd5e1 calc(297mm + 2px))',
-                  zIndex: 10
-                }}
-              />
-              {/* Page number labels */}
-              <div
-                className="absolute inset-y-0 right-0 w-8 pointer-events-none print:hidden overflow-hidden"
-                style={{ zIndex: 11 }}
-              >
-                {[...Array(10)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute right-2 text-[10px] font-bold text-slate-400"
-                    style={{ top: `calc(${i * 297}mm + 10px)` }}
-                  >
-                    P{i + 1}
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ padding: '53px 66px' }}>
-                {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
-              </div>
-            </div>
+          <div className="flex-1 overflow-auto bg-neutral-200/80">
+            <PaginatedPreview zoom={zoom}>
+               <div style={{ padding: '0 66px' }}>
+                 {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
+               </div>
+            </PaginatedPreview>
           </div>
         </div>
       </div>
