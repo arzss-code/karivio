@@ -183,6 +183,7 @@ export default function Navbar() {
           <div className="flex flex-col space-y-4">
             <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">Home</Link>
             <Link href="/app" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">Create CV</Link>
+            <Link href="/ats-checker" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">ATS Checker</Link>
             {userProfile && (
               <Link href="/history" onClick={() => setIsMenuOpen(false)} className="text-base font-medium text-neutral-600 hover:text-neutral-900 py-1 transition-colors">History</Link>
             )}
