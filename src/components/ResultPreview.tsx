@@ -149,74 +149,73 @@ export default function ResultPreview() {
       <div className="animate-scale-in flex flex-col h-full lg:h-[calc(100vh-1rem)] rounded-2xl border border-neutral-200 bg-white shadow-sm overflow-hidden relative">
 
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-6 py-4 bg-neutral-50 shrink-0">
-          <div className="relative w-full sm:w-auto">
+        <div className="flex items-center justify-between gap-3 border-b border-neutral-200 bg-neutral-50/80 px-5 py-3 shrink-0">
+          <div className="relative">
             <select
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
-              className="w-full sm:w-auto rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 appearance-none pr-10 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 transition-all shadow-sm"
+              className="rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-bold text-neutral-700 appearance-none pr-8 cursor-pointer hover:border-neutral-300 focus:outline-none focus:ring-0 shadow-sm"
             >
-              <option value="classic">Classic ATS Template</option>
-              <option value="modern">Modern Clean ATS</option>
-              <option value="minimal">Minimal Compact ATS</option>
+              <option value="classic">Classic ATS</option>
+              <option value="modern">Modern Clean</option>
+              <option value="minimal">Minimal Compact</option>
             </select>
-            <Settings2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <Settings2 className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2">
             {state.type === 'cv' && (
               <Link
                 href="/ats-checker"
-                className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-blue-50 px-5 py-2 text-sm font-semibold text-blue-700 shadow-sm border border-blue-200 hover:bg-blue-100 transition-colors active:scale-95"
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 shadow-sm border border-blue-200 hover:bg-blue-100 transition-colors active:scale-95"
               >
-                <Target className="h-4 w-4" />
-                Check ATS Score
+                <Target className="h-3.5 w-3.5" />
+                <span className="hidden xl:inline">Check ATS Score</span>
+                <span className="hidden sm:inline xl:hidden">ATS Score</span>
               </Link>
             )}
             <button
               onClick={handleDirectDownload}
               disabled={isDownloading}
-              className="flex-1 sm:flex-none inline-flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 transition-colors active:scale-95 disabled:opacity-70"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-neutral-800 transition-colors active:scale-95 disabled:opacity-70"
             >
-              {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              Download PDF
+              {isDownloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">Download PDF</span>
             </button>
           </div>
         </div>
 
         {/* Document Preview Wrapper */}
         <div className="relative flex-1 flex flex-col min-h-0 bg-neutral-200/80">
-          {/* Floating Zoom Controls */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-0.5 bg-white/90 backdrop-blur-md border border-neutral-200/80 rounded-full px-1.5 py-1 shadow-lg animate-fade-in">
-            <button onClick={handleZoomOut} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Zoom Out">
-              <ZoomOut className="h-3.5 w-3.5" />
+
+          {/* Floating Zoom Controls (Moved out of Toolbar) */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 bg-white/90 backdrop-blur-md border border-neutral-200/80 rounded-full px-2 py-1.5 shadow-xl">
+            <button onClick={handleZoomOut} className="p-1.5 text-neutral-600 hover:text-black hover:bg-neutral-100 rounded-full transition-all" title="Zoom Out">
+              <ZoomOut className="h-4 w-4" />
             </button>
-            <div className="flex items-center justify-center min-w-[2.75rem]">
-              <input
-                type="text"
-                className="text-[11px] font-bold text-neutral-700 w-6 text-right bg-transparent border-none focus:ring-0 p-0 m-0 outline-none"
-                value={zoomText}
-                onChange={(e) => setZoomText(e.target.value)}
-                onBlur={handleZoomSubmit}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleZoomSubmit(); }}
-              />
-              <span className="text-[11px] font-bold text-neutral-700">%</span>
+            <div className="flex items-center justify-center min-w-[3rem]">
+              <form onSubmit={(e) => { e.preventDefault(); handleZoomSubmit(); }}>
+                <input
+                  type="text"
+                  className="text-xs font-bold text-neutral-700 w-8 text-center bg-transparent border-none focus:ring-0 p-0 m-0 outline-none"
+                  value={zoomText}
+                  onChange={(e) => setZoomText(e.target.value)}
+                  onBlur={handleZoomSubmit}
+                />
+              </form>
+              <span className="text-xs font-bold text-neutral-700">%</span>
             </div>
-            <button onClick={handleZoomIn} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Zoom In">
-              <ZoomIn className="h-3.5 w-3.5" />
-            </button>
-            <div className="w-px h-4 bg-neutral-200 mx-1"></div>
-            <button onClick={handleZoomReset} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-all" title="Full Zoom">
-              <Maximize className="h-3.5 w-3.5" />
+            <button onClick={handleZoomIn} className="p-1.5 text-neutral-600 hover:text-black hover:bg-neutral-100 rounded-full transition-all" title="Zoom In">
+              <ZoomIn className="h-4 w-4" />
             </button>
           </div>
 
           {/* Document Preview Area */}
           <div className="flex-1 overflow-auto bg-neutral-200/80">
             <PaginatedPreview zoom={zoom}>
-               <div style={{ padding: '0 66px' }}>
-                 {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
-               </div>
+              <div style={{ padding: '0 66px' }}>
+                {state.type === 'cv' ? renderCV(state.result) : renderCoverLetter(typeof state.result === 'string' ? state.result : JSON.stringify(state.result))}
+              </div>
             </PaginatedPreview>
           </div>
         </div>
