@@ -64,3 +64,41 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const supabase = await getSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { document_type, content } = body;
+
+    if (!document_type || !content) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const supabaseAdmin = getSupabaseServiceRole();
+
+    const { error } = await supabaseAdmin
+      .from('documents')
+      .insert({
+        user_id: user.id,
+        document_type,
+        content
+      });
+
+    if (error) {
+      console.error('Error saving document to history:', error);
+      return NextResponse.json({ error: 'Failed to save document' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error: any) {
+    console.error('History POST error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

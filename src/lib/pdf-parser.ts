@@ -1,8 +1,4 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
-import 'pdfjs-dist/legacy/build/pdf.worker.mjs';
-
-// Explicitly tell pdfjs to not use standard fetch for worker since it's already imported
-pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
 export type ParsedPdfResult = {
   text: string;

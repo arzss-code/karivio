@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     // Parse body
     const body = await request.json();
-    const { cvText, jobDescription, formatIssues = [] } = body;
+    const { cvText, jobDescription, formatIssues = [], cvJson = null } = body;
 
     if (!cvText) {
       return NextResponse.json({ error: 'Missing CV content.' }, { status: 400 });
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('consume_credit_and_save_doc', {
       p_user_id: user.id,
       p_doc_type: 'ats_check',
-      p_content: { ...result, cvText, jobDescription }
+      p_content: { ...result, cvText, jobDescription, cvJson }
     });
 
     if (rpcError) {
