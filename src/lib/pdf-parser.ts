@@ -1,28 +1,4 @@
-// Polyfill Promise.withResolvers for Vercel Node 18 environments
-if (typeof Promise.withResolvers === 'undefined') {
-  (Promise as any).withResolvers = function () {
-    let resolve, reject;
-    const promise = new Promise((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    return { promise, resolve, reject };
-  };
-}
-
-// Polyfill DOM objects for pdfjs-dist in Node.js environment
-// These are required by pdfjs-dist 5.x but missing in Vercel's Node environment.
-if (typeof globalThis.DOMMatrix === 'undefined') {
-  (globalThis as any).DOMMatrix = class DOMMatrix {
-    constructor() {}
-  };
-}
-if (typeof globalThis.Path2D === 'undefined') {
-  (globalThis as any).Path2D = class Path2D {};
-}
-if (typeof globalThis.ImageData === 'undefined') {
-  (globalThis as any).ImageData = class ImageData {};
-}
+import { getDocumentProxy } from 'unpdf';
 
 export type ParsedPdfResult = {
   text: string;
@@ -38,17 +14,7 @@ export async function parsePdfWithLayout(pdfBuffer: ArrayBuffer): Promise<Parsed
   let hasTables = false;
 
   try {
-    // Dynamic import to avoid top-level crash on Vercel and apply polyfill first
-    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
-
-    const loadingTask = pdfjsLib.getDocument({ 
-      data: new Uint8Array(pdfBuffer),
-      // disableFontFace prevents pdfjs from trying to read standard fonts from the filesystem
-      disableFontFace: true,
-      useSystemFonts: true
-    });
-    const pdfDocument = await loadingTask.promise;
-
+    const pdfDocument = await getDocumentProxy(new Uint8Array(pdfBuffer));
     const numPages = pdfDocument.numPages;
 
     for (let i = 1; i <= numPages; i++) {
@@ -63,11 +29,11 @@ export async function parsePdfWithLayout(pdfBuffer: ArrayBuffer): Promise<Parsed
       for (const item of content.items) {
         if ('str' in item && 'transform' in item) {
           // item.transform is [scaleX, skewY, skewX, scaleY, translateX, translateY]
-          const x = item.transform[4];
-          const y = item.transform[5];
+          const x = (item as any).transform[4];
+          const y = (item as any).transform[5];
 
           // Collect X coordinates to heuristic check for multiple columns
-          if (item.str.trim().length > 2) {
+          if ((item as any).str.trim().length > 2) {
             xCoordinates.push(x);
           }
 
@@ -77,7 +43,7 @@ export async function parsePdfWithLayout(pdfBuffer: ArrayBuffer): Promise<Parsed
             lineText = '';
           }
           
-          lineText += item.str;
+          lineText += (item as any).str;
           lastY = y;
         }
       }
