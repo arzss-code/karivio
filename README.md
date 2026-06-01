@@ -1,6 +1,10 @@
-# CareerGen
+# Karivio
 
-CareerGen is an advanced ATS (Applicant Tracking System) Checker and Resume Generation web application. It is designed to help professionals optimize their resumes against job descriptions, ensuring higher compatibility with modern ATS systems.
+Karivio is an advanced ATS (Applicant Tracking System) Checker and Resume Generation web application. It is designed to help professionals optimize their resumes against job descriptions, ensuring higher compatibility with modern ATS systems.
+
+## Live Demo
+
+You can try Karivio live at: [https://karivio.vercel.app](https://karivio.vercel.app)
 
 ## Key Features
 

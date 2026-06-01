@@ -232,6 +232,7 @@ Guidelines for the JSON output:
   ],
   "skills": ["Skill 1", "Skill 2"]
 }
-2. Omit keys like "achievements" or "certifications" entirely if they are not present in the text.
-3. ONLY output the valid JSON object, without markdown formatting.`;
+2. For "projects": If a project has an introductory paragraph, put it in "description". If it has bullet points, put them in "details". DO NOT duplicate the same information in both fields. If there is no introductory paragraph, leave "description" empty (""). DO NOT invent a summary.
+3. Omit keys like "achievements" or "certifications" entirely if they are not present in the text.
+4. ONLY output the valid JSON object, without markdown formatting.`;
 }
