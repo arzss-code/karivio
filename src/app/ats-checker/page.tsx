@@ -271,8 +271,14 @@ export default function AtsCheckerPage() {
         body: JSON.stringify({ pdfBase64: base64 }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to extract text');
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        throw new Error(`Server error (${res.status}). Please try again later.`);
+      }
+      
+      if (!res.ok) throw new Error(data?.error || 'Failed to extract text');
 
       if (data.formatIssues) {
         setFormatIssues(data.formatIssues);
@@ -284,8 +290,14 @@ export default function AtsCheckerPage() {
         body: JSON.stringify({ cvText: data.text }),
       });
 
-      const parseData = await parseRes.json();
-      if (!parseRes.ok) throw new Error(parseData.error || 'Failed to parse CV into visual format');
+      let parseData;
+      try {
+        parseData = await parseRes.json();
+      } catch (e) {
+        throw new Error(`Parsing server error (${parseRes.status}).`);
+      }
+      
+      if (!parseRes.ok) throw new Error(parseData?.error || 'Failed to parse CV into visual format');
 
       setGenerationResult(parseData.result);
       setSource('generated');

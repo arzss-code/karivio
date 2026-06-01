@@ -1,4 +1,19 @@
+// Polyfill Promise.withResolvers for Vercel Node 18 environments
+if (typeof Promise.withResolvers === 'undefined') {
+  (Promise as any).withResolvers = function () {
+    let resolve, reject;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
+}
+
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+// Setup worker for Vercel environment
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
 
 export type ParsedPdfResult = {
   text: string;
@@ -14,7 +29,12 @@ export async function parsePdfWithLayout(pdfBuffer: ArrayBuffer): Promise<Parsed
   let hasTables = false;
 
   try {
-    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer) });
+    const loadingTask = pdfjsLib.getDocument({ 
+      data: new Uint8Array(pdfBuffer),
+      // Fix for Vercel: Provide CDN for standard fonts so it doesn't crash trying to read local fs
+      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`,
+      disableFontFace: true
+    });
     const pdfDocument = await loadingTask.promise;
 
     const numPages = pdfDocument.numPages;
