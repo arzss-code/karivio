@@ -35,4 +35,12 @@ blob-report/
 raw_app.html
 *.tsbuildinfo
 
+# docs
+.agent/
+.claude/
+.github/
+.gemini/
+.antigravity/
+PRD.md
+SCHEMA.md
 rencana_implementasi_ats_checker.md
