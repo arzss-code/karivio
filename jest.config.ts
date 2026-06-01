@@ -15,7 +15,7 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(nanostores|@nanostores\\/react)/)'
+    '/node_modules/(?!(nanostores|@nanostores\\/react|unpdf)/)'
   ],
 };
 
