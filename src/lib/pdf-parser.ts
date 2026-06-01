@@ -10,6 +10,20 @@ if (typeof Promise.withResolvers === 'undefined') {
   };
 }
 
+// Polyfill DOM objects for pdfjs-dist in Node.js environment
+// These are required by pdfjs-dist 5.x but missing in Vercel's Node environment.
+if (typeof globalThis.DOMMatrix === 'undefined') {
+  (globalThis as any).DOMMatrix = class DOMMatrix {
+    constructor() {}
+  };
+}
+if (typeof globalThis.Path2D === 'undefined') {
+  (globalThis as any).Path2D = class Path2D {};
+}
+if (typeof globalThis.ImageData === 'undefined') {
+  (globalThis as any).ImageData = class ImageData {};
+}
+
 export type ParsedPdfResult = {
   text: string;
   hasMultipleColumns: boolean;
