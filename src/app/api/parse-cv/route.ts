@@ -46,6 +46,15 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Parse CV Error:', error);
+
+    const isAiBusy = error?.status === 503 || error?.status === 429 || error?.message?.includes('high demand') || error?.message?.includes('busy');
+    if (isAiBusy) {
+      return NextResponse.json(
+        { error: 'Google AI servers are currently experiencing high demand. We attempted to use backup models but failed. Please try again in a few seconds.', isAiBusy: true },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { error: error.message || 'Failed to parse CV text into JSON.' },
       { status: 500 }

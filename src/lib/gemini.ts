@@ -21,47 +21,56 @@ export async function generateContent(
 ): Promise<string> {
   const client = getClient();
   let lastError;
+  const modelsToTry = ['gemini-3.5-flash', 'gemini-3.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
 
   for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await client.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-          maxOutputTokens: 4096,
-          ...(jsonMode ? { responseMimeType: 'application/json' } : {})
-        },
-      });
+    for (const currentModel of modelsToTry) {
+      try {
+        const response = await client.models.generateContent({
+          model: currentModel,
+          contents: prompt,
+          config: {
+            systemInstruction,
+            temperature: 0.7,
+            maxOutputTokens: 4096,
+            ...(jsonMode ? { responseMimeType: 'application/json' } : {})
+          },
+        });
 
-      const text = response.text;
-      if (!text) {
-        throw new Error('Empty response from Gemini API');
-      }
-      return text;
-    } catch (error: any) {
-      lastError = error;
-      const status = error?.status;
-      const message = error?.message || String(error);
-      
-      const isRetryable = 
-        status === 429 || 
-        status === 503 || 
-        message.includes('429') || 
-        message.includes('503') ||
-        message.includes('busy') ||
-        message.includes('high demand') ||
-        message.includes('quota');
+        const text = response.text;
+        if (!text) {
+          throw new Error('Empty response from Gemini API');
+        }
+        return text;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.status;
+        const message = error?.message || String(error);
 
-      if (isRetryable && attempt < retries) {
-        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
-        console.warn(`[Gemini API] Request failed (attempt ${attempt}/${retries}). Retrying in ${delay}ms...`, message);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        continue;
+        const isRetryable =
+          status === 429 ||
+          status === 503 ||
+          message.includes('429') ||
+          message.includes('503') ||
+          message.includes('busy') ||
+          message.includes('high demand') ||
+          message.includes('quota');
+
+        if (isRetryable) {
+          console.warn(`[Gemini API] Model ${currentModel} busy/failed. Trying next...`, message);
+          continue; // Try the next fallback model immediately
+        }
+
+        // If it's a structural error (like 400 Bad Request), don't retry models
+        throw error;
       }
-      
-      throw error;
+    }
+
+    // If we exhaust all fallback models, apply exponential backoff before the next full attempt
+    if (attempt < retries) {
+      const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+      console.warn(`[Gemini API] All models busy (attempt ${attempt}/${retries}). Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
@@ -77,60 +86,67 @@ export async function generateContentWithPdf(
 ): Promise<string> {
   const client = getClient();
   let lastError;
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-1.5-flash'];
 
   for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await client.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              {
-                inlineData: {
-                  data: pdfBase64,
-                  mimeType: 'application/pdf'
-                }
-              },
-              { text: prompt }
-            ]
-          }
-        ],
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-          maxOutputTokens: 8192,
-          ...(jsonMode ? { responseMimeType: 'application/json' } : {})
-        },
-      });
+    for (const currentModel of modelsToTry) {
+      try {
+        const response = await client.models.generateContent({
+          model: currentModel,
+          contents: [
+            {
+              role: 'user',
+              parts: [
+                {
+                  inlineData: {
+                    data: pdfBase64,
+                    mimeType: 'application/pdf'
+                  }
+                },
+                { text: prompt }
+              ]
+            }
+          ],
+          config: {
+            systemInstruction,
+            temperature: 0.7,
+            maxOutputTokens: 8192,
+            ...(jsonMode ? { responseMimeType: 'application/json' } : {})
+          },
+        });
 
-      const text = response.text;
-      if (!text) {
-        throw new Error('Empty response from Gemini API');
-      }
-      return text;
-    } catch (error: any) {
-      lastError = error;
-      const status = error?.status;
-      const message = error?.message || String(error);
-      
-      const isRetryable = 
-        status === 429 || 
-        status === 503 || 
-        message.includes('429') || 
-        message.includes('503') ||
-        message.includes('busy') ||
-        message.includes('high demand') ||
-        message.includes('quota');
+        const text = response.text;
+        if (!text) {
+          throw new Error('Empty response from Gemini API');
+        }
+        return text;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.status;
+        const message = error?.message || String(error);
 
-      if (isRetryable && attempt < retries) {
-        const delay = Math.pow(2, attempt) * 1000;
-        console.warn(`[Gemini API PDF] Request failed (attempt ${attempt}/${retries}). Retrying in ${delay}ms...`, message);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        continue;
+        const isRetryable =
+          status === 429 ||
+          status === 503 ||
+          message.includes('429') ||
+          message.includes('503') ||
+          message.includes('busy') ||
+          message.includes('high demand') ||
+          message.includes('quota');
+
+        if (isRetryable) {
+          console.warn(`[Gemini API PDF] Model ${currentModel} busy/failed. Trying next...`, message);
+          continue; // Try next fallback model
+        }
+
+        throw error;
       }
-      
-      throw error;
+    }
+
+    if (attempt < retries) {
+      const delay = Math.pow(2, attempt) * 1000;
+      console.warn(`[Gemini API PDF] All models busy (attempt ${attempt}/${retries}). Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
