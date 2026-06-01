@@ -1,43 +1,82 @@
-# Astro Starter Kit: Minimal
+# CareerGen
 
-```sh
-npm create astro@latest -- --template minimal
+CareerGen is an advanced ATS (Applicant Tracking System) Checker and Resume Generation web application. It is designed to help professionals optimize their resumes against job descriptions, ensuring higher compatibility with modern ATS systems.
+
+## Key Features
+
+- ATS Resume Checker: Analyze resumes against target job descriptions to calculate match scores and identify missing keywords.
+- PDF Text Extraction: Extract and parse text from PDF resumes accurately.
+- Resume Generation: Create modern, minimal, or classic ATS-friendly resumes.
+- Smart Rewrite Suggestions: Enhance resume impact using AI-driven rewriting suggestions.
+- History Tracking: Save and manage previously analyzed documents.
+- Payment Integration: Process transactions securely via Midtrans.
+
+## Technology Stack
+
+- Framework: Next.js (App Router)
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Database & Authentication: Supabase
+- PDF Parsing: unpdf
+- State Management: Nanostores
+- Testing: Jest (Unit) & Playwright (E2E)
+- Payments: Midtrans Client
+
+## Getting Started
+
+### Prerequisites
+
+Ensure you have Node.js and `pnpm` installed on your machine.
+
+### Installation
+
+1. Clone the repository and navigate to the project directory.
+2. Install the dependencies using pnpm:
+
+```bash
+pnpm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+3. Set up the environment variables. Copy the `.env.example` file to `.env` and configure the necessary values, including Supabase and Midtrans credentials.
 
-## 🚀 Project Structure
+### Running the Application
 
-Inside of your Astro project, you'll see the following folders and files:
+To start the local development server:
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+pnpm dev
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+The application will be available at `http://localhost:3000`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Building for Production
 
-Any static assets, like images, can be placed in the `public/` directory.
+To create an optimized production build:
 
-## 🧞 Commands
+```bash
+pnpm build
+```
 
-All commands are run from the root of the project, from a terminal:
+To start the production server:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+pnpm start
+```
 
-## 👀 Want to learn more?
+## Testing
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Run unit tests using Jest:
+
+```bash
+pnpm test
+```
+
+Run End-to-End tests using Playwright:
+
+```bash
+pnpm test:e2e
+```
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
