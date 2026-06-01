@@ -40,15 +40,12 @@ export async function parsePdfWithLayout(pdfBuffer: ArrayBuffer): Promise<Parsed
   try {
     // Dynamic import to avoid top-level crash on Vercel and apply polyfill first
     const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
-    
-    // Setup worker for Vercel environment
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
 
     const loadingTask = pdfjsLib.getDocument({ 
       data: new Uint8Array(pdfBuffer),
-      // Fix for Vercel: Provide CDN for standard fonts so it doesn't crash trying to read local fs
-      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`,
-      disableFontFace: true
+      // disableFontFace prevents pdfjs from trying to read standard fonts from the filesystem
+      disableFontFace: true,
+      useSystemFonts: true
     });
     const pdfDocument = await loadingTask.promise;
 
