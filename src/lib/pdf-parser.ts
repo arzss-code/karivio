@@ -10,11 +10,6 @@ if (typeof Promise.withResolvers === 'undefined') {
   };
 }
 
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
-
-// Setup worker for Vercel environment
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
-
 export type ParsedPdfResult = {
   text: string;
   hasMultipleColumns: boolean;
@@ -29,6 +24,12 @@ export async function parsePdfWithLayout(pdfBuffer: ArrayBuffer): Promise<Parsed
   let hasTables = false;
 
   try {
+    // Dynamic import to avoid top-level crash on Vercel and apply polyfill first
+    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    
+    // Setup worker for Vercel environment
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
+
     const loadingTask = pdfjsLib.getDocument({ 
       data: new Uint8Array(pdfBuffer),
       // Fix for Vercel: Provide CDN for standard fonts so it doesn't crash trying to read local fs
